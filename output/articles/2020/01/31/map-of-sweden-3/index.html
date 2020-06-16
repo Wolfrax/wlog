@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="D3, Maps, Technologies, " />
+
+<meta property="og:title" content="Map of Sweden #3 "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/31/map-of-sweden-3/" />
+<meta property="og:description" content="Introduction Now its time to make use of the data collected from SMHI and visualize them on top of the map of Sweden. As been shown in Map of Sweden #2, an HTTP client can retrieve data from a server, this is done through jQuery. A simple snippet like this …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-31T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-02-01T00:00:00+01:00" />
+<meta name="twitter:title" content="Map of Sweden #3 ">
+<meta name="twitter:description" content="Introduction Now its time to make use of the data collected from SMHI and visualize them on top of the map of Sweden. As been shown in Map of Sweden #2, an HTTP client can retrieve data from a server, this is done through jQuery. A simple snippet like this …">
+
+        <title>Map of Sweden #3  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/31/map-of-sweden-3/">
+                Map of Sweden #3
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Now its time to make use of the data collected from SMHI and visualize them on top of the map of Sweden.
+As been shown in <a class="reference external" href="https://wlog.viltstigen.se/articles/2020/01/28/map-of-sweden-2/">Map of Sweden #2</a>, an HTTP client can retrieve data from a
+server, this is done through <a class="reference external" href="https://jquery.com/">jQuery</a>. A simple snippet like this</p>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">get_clover_data</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;/clover_data&quot;</span><span class="p">,</span>
+        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+        <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+        <span class="nx">cache</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="p">}).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">series</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">weather</span> <span class="o">=</span> <span class="nx">series</span><span class="p">;</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+<p>If the ajax-call is successful, the JSON formatted data is copied into the variable weather. All observations are
+included. To access, for example, the average temperature for the first station do <strong>weather['avg_temp'][0].val</strong>.
+As I only use one observation at a time for visualization, I extract the observation I want for visualization.
+This is done like so</p>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">get_values</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">lst</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">let</span> <span class="nx">max_val</span> <span class="o">=</span> <span class="nx">min_val</span> <span class="o">=</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">val</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">stn</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">stn</span> <span class="o">&lt;</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span> <span class="nx">stn</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">active</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// Transform coordinates according to the selected projection</span>
+            <span class="kd">let</span> <span class="nx">xy</span> <span class="o">=</span> <span class="nx">projection</span><span class="p">([</span><span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">lon</span><span class="p">,</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">lat</span><span class="p">]);</span>
+            <span class="nx">lst</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+                <span class="nx">x</span><span class="o">:</span> <span class="nx">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="nx">y</span><span class="o">:</span> <span class="nx">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="nx">station</span><span class="o">:</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">station</span><span class="p">,</span>
+                <span class="nx">val</span><span class="o">:</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">val</span><span class="p">,</span>
+                <span class="nx">nr</span><span class="o">:</span> <span class="nx">stn</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+            <span class="p">});</span>
+            <span class="nx">max_val</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">max_val</span><span class="p">,</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">val</span><span class="p">);</span>
+            <span class="nx">min_val</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">min_val</span><span class="p">,</span> <span class="nx">weather</span><span class="p">[</span><span class="nx">key</span><span class="p">][</span><span class="nx">stn</span><span class="p">].</span><span class="nx">val</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="nx">key</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="o">:</span> <span class="nx">lst</span><span class="p">,</span> <span class="nx">max</span><span class="o">:</span> <span class="nx">max_val</span><span class="p">,</span> <span class="nx">min</span><span class="o">:</span> <span class="nx">min_val</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="nx">weather</span><span class="p">.</span><span class="nx">date</span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+<p>Some comments</p>
+<ul class="simple">
+<li>Observations are accessed with the &quot;key&quot; (e.g. 'avg_temp') first, then a station (as a number) and finally the value as
+in <strong>weather[key][stn].lon</strong>.</li>
+<li>There is a call to projection that transform the longitude and latitude values for the station. The projection were
+discussed in <a class="reference external" href="https://wlog.viltstigen.se/articles/2020/01/26/map-of-sweden-1/">Map of Sweden #1</a>.</li>
+</ul>
+<p>Now we got a JSON-list with fields for the selected key after calling <strong>get_values</strong>. It is time to visualize these on
+top of the map of Sweden. We do this by calling the javascript function <strong>render_map</strong>, below. But, first we got to fix
+the file &quot;swe.json&quot;.</p>
+<div class="highlight"><pre><span></span>$ curl http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_countries.zip -O
+$ unzip ne_10m_admin_0_countries.zip
+$ ogr2ogr -f GeoJSON -where <span class="s2">&quot;ADM0_A3 = &#39;SWE&#39;&quot;</span> subunits.json ne_10m_admin_0_countries.shp
+$ topojson -o swe.json --properties -- subunits.json
+</pre></div>
+<div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">width</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">600</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">svg</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;svg&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nx">width</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="nx">height</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">projection</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">geo</span><span class="p">.</span><span class="nx">mercator</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">center</span><span class="p">([</span><span class="mf">14.6</span><span class="p">,</span> <span class="mf">62.1</span><span class="p">])</span>
+    <span class="p">.</span><span class="nx">scale</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">translate</span><span class="p">([</span><span class="nx">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]);</span>
+<span class="kd">let</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">geo</span><span class="p">.</span><span class="nx">path</span><span class="p">().</span><span class="nx">projection</span><span class="p">(</span><span class="nx">projection</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">render_map</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">colors</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">quantize</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">domain</span><span class="p">([</span><span class="nx">values</span><span class="p">.</span><span class="nx">min</span><span class="p">,</span> <span class="nx">values</span><span class="p">.</span><span class="nx">max</span><span class="p">])</span>
+        <span class="p">.</span><span class="nx">range</span><span class="p">([</span><span class="s1">&#39;#9e0142&#39;</span><span class="p">,</span><span class="s1">&#39;#d53e4f&#39;</span><span class="p">,</span><span class="s1">&#39;#f46d43&#39;</span><span class="p">,</span><span class="s1">&#39;#fdae61&#39;</span><span class="p">,</span><span class="s1">&#39;#fee08b&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;#e6f598&#39;</span><span class="p">,</span><span class="s1">&#39;#abdda4&#39;</span><span class="p">,</span><span class="s1">&#39;#66c2a5&#39;</span><span class="p">,</span><span class="s1">&#39;#3288bd&#39;</span><span class="p">,</span><span class="s1">&#39;#5e4fa2&#39;</span><span class="p">].</span><span class="nx">reverse</span><span class="p">());</span>
+
+    <span class="nx">d3</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="s2">&quot;swe.json&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">se</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">voronoi</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">voronoi</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">x</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">y</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">y</span>
+            <span class="p">});</span>
+
+        <span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">topojson</span><span class="p">.</span><span class="nx">feature</span><span class="p">(</span><span class="nx">se</span><span class="p">,</span> <span class="nx">se</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">subunits</span><span class="p">).</span><span class="nx">features</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">enter</span><span class="p">()</span>
+                <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;defs&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;clipPath&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;swe-clip&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span>
+
+        <span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;voronoi&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">voronoi</span><span class="p">(</span><span class="nx">values</span><span class="p">.</span><span class="nx">val</span><span class="p">))</span>
+            <span class="p">.</span><span class="nx">enter</span><span class="p">()</span>
+                <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;clip-path&quot;</span><span class="p">,</span> <span class="s2">&quot;url(#swe-clip)&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;fill&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">colors</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">point</span><span class="p">.</span><span class="nx">val</span><span class="p">)</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="s2">&quot;M&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;Z&quot;</span><span class="p">;</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="s2">&quot;stroke: &quot;</span> <span class="o">+</span> <span class="nx">colors</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">point</span><span class="p">.</span><span class="nx">val</span><span class="p">)</span>
+                <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+<p>Above assumes that the variable weather is available. I do this by include a file through
+<strong>&lt;script src=&quot;weather.js&quot;&gt;&lt;/script&gt;</strong> in the <strong>&lt;head&gt;</strong>-section to keep it simple (in my real implementation the data
+is accessed through a jQuery ajax-request, see <a class="reference external" href="https://wlog.viltstigen.se/articles/2020/01/28/map-of-sweden-2/">Map of Sweden #2</a>), see the
+implementation of this blog posting at <a class="reference external" href="https://github.com/Wolfrax/clover/tree/master/blog/Part%203">Github</a>.</p>
+<p>Running the javasript should produce this.</p>
+<div class="align-center figure">
+<img alt="alternate text" src="https://wlog.viltstigen.se/img/Map_of_Sweden_part_3.png" style="width: 249px; height: 538px;" />
+<p class="caption">Average temp</p>
+</div>
+<p>How does this work?</p>
+<p>The contants and variables before <strong>render_map</strong> was explained in <a class="reference external" href="https://wlog.viltstigen.se/articles/2020/01/26/map-of-sweden-1/">Map of Sweden #1</a></p>
+<p>In <strong>render_map</strong> a <strong>color</strong> D3-variable is defined; the domain of the variable is the <strong>min</strong> and <strong>max</strong> values of
+the observation to render, the range is a color scale generated through
+<a class="reference external" href="http://colorbrewer2.org/#type=sequential&amp;scheme=BuGn&amp;n=3">colorbrewer</a>.
+In practice this means that a value of the observation is mapped to a specific color, in this case there are 10 colors
+going from blue to red. (Colorbrewer generates a scale going from red to blue, but I want the lowest value to mapped
+to blue and the highest to red, thus I reverse the array).</p>
+<p>Using the color for a specific value, I want to use an area centered around the station where the measurement have
+been made. For this purpose I use a <a class="reference external" href="https://en.wikipedia.org/wiki/Voronoi_diagram">voronoi diagram</a>. In simple
+terms, this type of diagram partition the map into areas where all pixels are closest to the station point
+(closest Euclidian distance). D3 makes this possible by the <strong>voronoi-function</strong>. I do this by declaring the
+voronoi-variable. However, to have this working, I need to clip all voronoi areas to stay within the map of Sweden.
+This is made by defining a <strong>&quot;clipPath&quot;</strong> with id <strong>swe-clip</strong>, which is referenced later on using <strong>url(#swe-clip)</strong>.</p>
+<p>In summary, the logic of the render_map function is</p>
+<ol class="arabic simple">
+<li>Define the color mapping in the variable color</li>
+<li>Read the file swe.json (which contain, in topoJSON format, the geometry for Sweden in the highest adminstrative level from Natural Earth)</li>
+<li>Define the voronoi variable</li>
+<li>Generate a SVG clipPath with id swe-clip</li>
+<li>Draw the map of Sweden using a voronoi diagram, filling each area with a color that is mapped through the variable color.
+Each area is clipped according to the swe-clip definition. The last style-attribute, removes the visible borders of
+the voronoi areas by drawning them in the same color as the area was filled with.</li>
+</ol>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/31/map-of-sweden-3/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-31T00:00:00+01:00">Jan 31, 2020</time>
+<h4>Last Updated</h4>
+<time datetime="2020-02-01T00:00:00+01:00">Feb 1, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#d3-ref">D3
+                    <span>4</span>
+</a></li>
+                <li><a href="https://wlog.viltstigen.se/tags.html#maps-ref">Maps
+                    <span>4</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

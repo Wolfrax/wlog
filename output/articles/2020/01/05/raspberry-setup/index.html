@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="Raspberry, Technologies, " />
+
+<meta property="og:title" content="Raspberry setup "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/05/raspberry-setup/" />
+<meta property="og:description" content="Setup Raspbian Using NOOBS to install Raspian. A SD card (&gt;= 16GB) is needed. Download NOOBS and unzip it, then format the SD card. I use a MacBook, with the application &#34;SDFormatter&#34;, use the option &#34;Overwrite Format&#34; (not &#34;Quick Format&#34;). When done, copy all files in the NOOBS root directory to …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-05T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-02-09T00:00:00+01:00" />
+<meta name="twitter:title" content="Raspberry setup ">
+<meta name="twitter:description" content="Setup Raspbian Using NOOBS to install Raspian. A SD card (&gt;= 16GB) is needed. Download NOOBS and unzip it, then format the SD card. I use a MacBook, with the application &#34;SDFormatter&#34;, use the option &#34;Overwrite Format&#34; (not &#34;Quick Format&#34;). When done, copy all files in the NOOBS root directory to …">
+
+        <title>Raspberry setup  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/05/raspberry-setup/">
+                Raspberry setup
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <div class="section" id="setup-raspbian">
+<h2>Setup Raspbian</h2>
+<p>Using <a class="reference external" href="https://www.raspberrypi.org/downloads/noobs/">NOOBS</a> to install
+<a class="reference external" href="https://www.raspbian.org/RaspbianAbout">Raspian</a>. A SD card (&gt;= 16GB) is needed.</p>
+<p>Download NOOBS and unzip it, then format the SD card. I use a MacBook, with the
+application <a class="reference external" href="https://www.sdcard.org/downloads/index.html">&quot;SDFormatter&quot;</a>, use the option &quot;Overwrite Format&quot;
+(not &quot;Quick Format&quot;). When done, copy all files in the NOOBS root directory to the SD card, plug it into the Raspberry
+and start it up. A self-explaining menu with OS'es to choose from appear.</p>
+<p>Install Raspbian.</p>
+<p>Once done, some configuration is needed to setup the environment to my liking.</p>
+</div>
+<div class="section" id="configure">
+<h2>Configure</h2>
+<p>Note that below, at least some of it, can also be made through the Raspberry UI (Gnome).</p>
+<div class="section" id="bashrc">
+<h3>bashrc</h3>
+<p>The bash-shell reads <tt class="docutils literal">/etc/profile</tt> which in turn reads <tt class="docutils literal">/etc/bash.bashrc</tt>. These are the system-wide files.
+Add this:</p>
+<div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -l --color=auto&#39;</span>
+<span class="nb">alias</span> <span class="nv">la</span><span class="o">=</span><span class="s1">&#39;ls -A --color=auto&#39;</span>
+<span class="nb">alias</span> <span class="nv">l</span><span class="o">=</span><span class="s1">&#39;ls -CF --color=auto&#39;</span>
+<span class="nb">alias</span> <span class="nv">ls</span><span class="o">=</span><span class="s1">&#39;ls -l --color=auto&#39;</span>
+</pre></div>
+<p>Reload by:</p>
+<div class="highlight"><pre><span></span>$ <span class="nb">source</span> ~/.bashrc
+</pre></div>
+</div>
+<div class="section" id="hostname">
+<h3>hostname</h3>
+<p>Change the hostname to rpi1.</p>
+<p>Edit <tt class="docutils literal">/etc/hosts</tt>, change last row which states <tt class="docutils literal">127.0.1.1 raspberrypi</tt> to <tt class="docutils literal">127.0.1.1 rpi1</tt>.
+Then edit <tt class="docutils literal">/etc/hostname</tt> and add the wanted host name (rpi1).
+Make it take effect:</p>
+<div class="highlight"><pre><span></span>$ sudo /etc/init.d/hostname.sh
+$ sudo reboot
+</pre></div>
+</div>
+<div class="section" id="timezone-and-locale">
+<h3>Timezone and Locale</h3>
+<p>To update to correct timezone (use <tt class="docutils literal">$ date</tt> to check), do <tt class="docutils literal">$ sudo <span class="pre">dpkg-reconfigure</span> tzdata</tt></p>
+<p>If you get <tt class="docutils literal"><span class="pre">-bash:</span> warning: setlocale: LC_ALL: cannot change locale <span class="pre">(en_US.UTF-8)</span></tt> message at login then
+do <tt class="docutils literal">$ sudo <span class="pre">dpkg-reconfigure</span> locales</tt>, make sure that &quot;en_US.UTF-8&quot; is selected.</p>
+</div>
+<div class="section" id="firewall-ufw">
+<h3>Firewall (UFW)</h3>
+<p>Use UFW (Uncomplicated Firewall) as firewall protection, a good summary is <a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-setup-a-firewall-with-ufw-on-an-ubuntu-and-debian-cloud-server">here</a>.
+Some commands:</p>
+<div class="highlight"><pre><span></span>$ sudo apt-get install ufw
+$ sudo ufw disable
+$ sudo ufw <span class="nb">enable</span>
+$ sudo ufw allow ssh                  <span class="c1"># allow for ssh traffic on port 22, equivalent $ sudo ufw allow 22/tcp</span>
+$ sudo ufw delete allow ssh           <span class="c1"># Remove ssh traffic</span>
+$ sudo sudo ufw allow www             <span class="c1"># allow www traffic on port 80</span>
+$ sudo ufw allow from <span class="m">192</span>.168.1.0/24  <span class="c1"># allow all nodes on subnet 192.168.1.X</span>
+$ sudo ufw reset                      <span class="c1"># Reset everything</span>
+</pre></div>
+<p>My setup on one Raspberry (there is a difference between each Raspberry Pi node, as I have different ports open for web
+applications).</p>
+<div class="highlight"><pre><span></span>$ sudo ufw allow from <span class="m">192</span>.168.1.0/24 to any port <span class="m">80</span>   <span class="c1"># Web server, HTTP</span>
+$ sudo ufw allow from <span class="m">192</span>.168.1.0/24 to any port <span class="m">443</span>  <span class="c1"># Web server, HTTPS</span>
+$ sudo ufw allow from <span class="m">192</span>.168.1.0/24 to any port <span class="m">22</span>   <span class="c1"># SSH</span>
+$ sudo ufw allow from <span class="m">192</span>.168.1.0/24 to any port <span class="m">8094</span> <span class="c1"># Web app</span>
+$ sudo ufw allow from <span class="m">192</span>.168.1.0/24 to any port <span class="m">8096</span> <span class="c1"># Web app</span>
+$ sudo ufw status
+Status: active
+
+To                         Action      From
+--                         ------      ----
+<span class="m">8094</span>                       ALLOW       <span class="m">192</span>.168.1.0/24
+<span class="m">80</span>                         ALLOW       <span class="m">192</span>.168.1.0/24
+<span class="m">443</span>                        ALLOW       <span class="m">192</span>.168.1.0/24
+<span class="m">22</span>                         ALLOW       <span class="m">192</span>.168.1.0/24
+<span class="m">8096</span>                       ALLOW       <span class="m">192</span>.168.1.0/24
+</pre></div>
+</div>
+<div class="section" id="networking">
+<h3>Networking</h3>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Netstat">netstat</a> used for displaying information on network connections. Example:</p>
+<div class="highlight"><pre><span></span>$ sudo netstat --tcp --listening --programs --numeric
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        <span class="m">0</span>      <span class="m">0</span> <span class="m">0</span>.0.0.0:8094            <span class="m">0</span>.0.0.0:*               LISTEN      <span class="m">3525</span>/python
+tcp        <span class="m">0</span>      <span class="m">0</span> <span class="m">0</span>.0.0.0:8096            <span class="m">0</span>.0.0.0:*               LISTEN      <span class="m">4338</span>/python3
+tcp        <span class="m">0</span>      <span class="m">0</span> <span class="m">0</span>.0.0.0:5900            <span class="m">0</span>.0.0.0:*               LISTEN      <span class="m">373</span>/vncserver-x11-c
+tcp        <span class="m">0</span>      <span class="m">0</span> <span class="m">0</span>.0.0.0:80              <span class="m">0</span>.0.0.0:*               LISTEN      <span class="m">11194</span>/nginx: master
+tcp        <span class="m">0</span>      <span class="m">0</span> <span class="m">0</span>.0.0.0:22              <span class="m">0</span>.0.0.0:*               LISTEN      <span class="m">383</span>/sshd
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::548                  :::*                    LISTEN      <span class="m">1458</span>/afpd
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::5900                 :::*                    LISTEN      <span class="m">373</span>/vncserver-x11-c
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::80                   :::*                    LISTEN      <span class="m">11194</span>/nginx: master
+tcp6       <span class="m">0</span>      <span class="m">0</span> :::22                   :::*                    LISTEN      <span class="m">383</span>/sshd
+tcp6       <span class="m">0</span>      <span class="m">0</span> ::1:4700                :::*                    LISTEN      <span class="m">1459</span>/cnid_metad
+</pre></div>
+<p>To check DNS use <a class="reference external" href="https://en.wikipedia.org/wiki/Dig_(command)">dig</a> or
+<a class="reference external" href="https://en.wikipedia.org/wiki/Nslookup">nslookup</a>. Need to install <tt class="docutils literal">dnsutils</tt> to use them. Example:</p>
+<div class="highlight"><pre><span></span>$ sudo apt-get install dnsutils
+$ dig www.viltstigen.se
+
+<span class="p">;</span> &lt;&lt;&gt;&gt; DiG <span class="m">9</span>.9.5-9+deb8u15-Raspbian &lt;&lt;&gt;&gt; www.viltstigen.se
+<span class="p">;;</span> global options: +cmd
+<span class="p">;;</span> Got answer:
+<span class="p">;;</span> -&gt;&gt;HEADER<span class="s">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span class="m">62736</span>
+<span class="p">;;</span> flags: qr rd ra<span class="p">;</span> QUERY: <span class="m">1</span>, ANSWER: <span class="m">1</span>, AUTHORITY: <span class="m">0</span>, ADDITIONAL: <span class="m">0</span>
+
+<span class="p">;;</span> QUESTION SECTION:
+<span class="p">;</span>www.viltstigen.se.         IN      A
+
+<span class="p">;;</span> ANSWER SECTION:
+www.viltstigen.se.  <span class="m">120</span>     IN      A       <span class="m">85</span>.225.114.58
+
+<span class="p">;;</span> Query time: <span class="m">31</span> msec
+<span class="p">;;</span> SERVER: <span class="m">192</span>.168.1.1#53<span class="o">(</span><span class="m">192</span>.168.1.1<span class="o">)</span>
+<span class="p">;;</span> WHEN: Mon Jan <span class="m">06</span> <span class="m">14</span>:24:52 CET <span class="m">2020</span>
+<span class="p">;;</span> MSG SIZE  rcvd: <span class="m">51</span>
+
+$ nslookup www.viltstigen.se
+Server:     <span class="m">192</span>.168.1.1
+Address:    <span class="m">192</span>.168.1.1#53
+
+Non-authoritative answer:
+Name:    www.viltstigen.se
+Address: <span class="m">85</span>.225.114.58
+</pre></div>
+<p>Make a raspberry visible in OSX finder, install <tt class="docutils literal">netatalk</tt> ($ sudo apt-get install netatalk).</p>
+</div>
+<div class="section" id="automatic-reboot-after-kernel-crash">
+<h3>Automatic reboot after kernel crash</h3>
+<p>Edit <tt class="docutils literal">/etc/sysctl.conf` and add ``kernel.panic = 10</tt>.
+This will make a reboot after 10 seconds delay after kernel panic crash. Make the changes take effect and check result
+by</p>
+<div class="highlight"><pre><span></span>$ sudo sysctl --system<span class="se">\</span>
+$ sudo sysctl -a <span class="p">|</span> grep kernel.panic <span class="c1"># check</span>
+kernel.panic <span class="o">=</span> <span class="m">10</span>
+kernel.panic_on_oops <span class="o">=</span> <span class="m">0</span>
+kernel.panic_on_rcu_stall <span class="o">=</span> <span class="m">0</span>
+kernel.panic_on_warn <span class="o">=</span> <span class="m">0</span>
+sysctl: reading key <span class="s2">&quot;net.ipv6.conf.all.stable_secret&quot;</span>
+sysctl: reading key <span class="s2">&quot;net.ipv6.conf.default.stable_secret&quot;</span>
+sysctl: reading key <span class="s2">&quot;net.ipv6.conf.eth0.stable_secret&quot;</span>
+sysctl: reading key <span class="s2">&quot;net.ipv6.conf.lo.stable_secret&quot;</span>
+sysctl: reading key <span class="s2">&quot;net.ipv6.conf.wlan0.stable_secret&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="uptimerobot">
+<h3>uptimerobot</h3>
+<p><a class="reference external" href="https://uptimerobot.com/">Uptimerobot</a> is a free service that checks the response time for web-sites,
+it alerts through email.</p>
+</div>
+<div class="section" id="supervisor">
+<h3>Supervisor</h3>
+<p><a class="reference external" href="http://supervisord.org/">Supervisor</a> is a tool for monitoring daemons. Install and configure supervisor</p>
+<div class="highlight"><pre><span></span>$ sudo apt-get install supervisor
+$ sudo supervisorctl status
+$ sudo supervisorctl reread <span class="c1"># Restart supervisor to have it grab the changes</span>
+$ sudo supervisorctl update
+</pre></div>
+</div>
+<div class="section" id="nginx">
+<h3>NGINX</h3>
+<p>Install and start <strong>nginx</strong></p>
+<div class="highlight"><pre><span></span>$ sudo apt update
+$ sudo apt install nginx
+$ sudo /etc/init.d/nginx start
+$ sudo apt-get purge apache2  <span class="c1"># Remove apache in case it is installed</span>
+</pre></div>
+<p>When changing <strong>nginx</strong> configuration, test and restart.</p>
+<div class="highlight"><pre><span></span>$ sudo nginx -t  <span class="c1"># Test to check if configuration is Ok</span>
+$ sudo systemctl restart nginx  <span class="c1"># Update and restart</span>
+</pre></div>
+</div>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/05/raspberry-setup/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-05T00:00:00+01:00">Jan 5, 2020</time>
+<h4>Last Updated</h4>
+<time datetime="2020-02-09T00:00:00+01:00">Feb 9, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#raspberry-ref">Raspberry
+                    <span>6</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

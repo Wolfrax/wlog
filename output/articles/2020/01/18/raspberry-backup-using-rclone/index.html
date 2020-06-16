@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="Raspberry, Google Drive, rclone, Technologies, " />
+
+<meta property="og:title" content="Raspberry backup using rclone "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/18/raspberry-backup-using-rclone/" />
+<meta property="og:description" content="Introduction Backing up raspberries using rclone to Google drive. Installation of rclone Installation on rpi1. Please note the &#34;INSTRUCTIONS Google Drive Example&#34; at the end of rclone installation. pi@rpi1:~ $ curl -L https://raw.github.com/pageauc/rclone4pi/master/rclone-install.sh | bash % Total % Received % Xferd Average Speed Time Time Time …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-18T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-01-29T00:00:00+01:00" />
+<meta name="twitter:title" content="Raspberry backup using rclone ">
+<meta name="twitter:description" content="Introduction Backing up raspberries using rclone to Google drive. Installation of rclone Installation on rpi1. Please note the &#34;INSTRUCTIONS Google Drive Example&#34; at the end of rclone installation. pi@rpi1:~ $ curl -L https://raw.github.com/pageauc/rclone4pi/master/rclone-install.sh | bash % Total % Received % Xferd Average Speed Time Time Time …">
+
+        <title>Raspberry backup using rclone  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/18/raspberry-backup-using-rclone/">
+                Raspberry backup using rclone
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Backing up raspberries using <a class="reference external" href="https://rclone.org/drive/">rclone</a> to Google drive.</p>
+</div>
+<div class="section" id="installation-of-rclone">
+<h2>Installation of rclone</h2>
+<p>Installation on <strong>rpi1</strong>.</p>
+<p>Please note the <strong>&quot;INSTRUCTIONS Google Drive Example&quot;</strong> at the end of rclone installation.</p>
+<div class="highlight"><pre><span></span>pi@rpi1:~ $ curl -L https://raw.github.com/pageauc/rclone4pi/master/rclone-install.sh <span class="p">|</span> bash
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  <span class="m">0</span>     <span class="m">0</span>    <span class="m">0</span>     <span class="m">0</span>    <span class="m">0</span>     <span class="m">0</span>      <span class="m">0</span>      <span class="m">0</span> --:--:-- --:--:-- --:--:--     <span class="m">0</span>
+<span class="m">100</span>  <span class="m">2508</span>  <span class="m">100</span>  <span class="m">2508</span>    <span class="m">0</span>     <span class="m">0</span>   <span class="m">2328</span>      <span class="m">0</span>  <span class="m">0</span>:00:01  <span class="m">0</span>:00:01 --:--:--  136k
+bash ver <span class="m">1</span>.6 written by Claude Pageau
+-------------------------------------------------------------------------------
+--2020-01-18 <span class="m">13</span>:20:27--  https://downloads.rclone.org/rclone-current-linux-arm.zip
+Resolving downloads.rclone.org <span class="o">(</span>downloads.rclone.org<span class="o">)</span>... <span class="m">5</span>.153.250.7, 2a02:24e0:8:61f9::1
+Connecting to downloads.rclone.org <span class="o">(</span>downloads.rclone.org<span class="o">)</span><span class="p">|</span><span class="m">5</span>.153.250.7<span class="p">|</span>:443... connected.
+HTTP request sent, awaiting response... <span class="m">200</span> OK
+
+...snip...
+
+rclone installed at /usr/bin/rclone
+-------------------------------------------------------------------------------
+                 INSTRUCTIONS Google Drive Example
+
+<span class="m">1</span> You will be required to have a login account on the remote storage service
+  Open putty SSH login session to RPI and execute <span class="nb">command</span> below
+
+  rclone config
+
+  Follow rclone prompts. For more Details See
+  https://github.com/pageauc/rclone4pi/wiki/Home
+<span class="m">2</span> At name&gt; prompt specify a reference name  eg gdmedia
+<span class="m">3</span> At storage&gt; prompt Enter a remote storage number from List
+<span class="m">4</span> Select Auto Config, At Link: prompt, left click
+  and highlight rclone url link <span class="o">(</span><span class="k">do</span> not hit enter<span class="o">)</span>
+<span class="m">5</span> on computer web browser url bar right click paste and go.
+<span class="m">6</span> On computer web browser security page, Confirm access.
+<span class="m">7</span> Copy web browser access security token and paste
+  into RPI SSH session rclone prompt. Enter to accept
+<span class="m">8</span> To <span class="nb">test</span> remote service access. Execute the following where
+  gdmedia is the name you gave your remote service
+
+  rclone ls gdmedia:/
+
+Example sync <span class="nb">command</span> make <span class="nb">source</span> identical to destination
+
+rclone sync -v /home/pi/rpi-sync gdmedia:/rpi-sync
+
+To upgrade
+
+  <span class="nb">cd</span> rpi-sync
+  ./rclone-install.sh upgrade
+
+For more Details See https://github.com/pageauc/rclone4pi/wiki/Home
+Bye
+</pre></div>
+</div>
+<div class="section" id="configuration-of-rclone">
+<h2>Configuration of rclone</h2>
+<p>A Google drive item needs to be configured for rclone, below I first remove <tt class="docutils literal">google_drive</tt> (which where wrongly
+configured at a previous session) and then recreate a new remote with the same name.</p>
+<p><strong>Note</strong></p>
+<blockquote>
+A <tt class="docutils literal">client id</tt> and its associated <tt class="docutils literal">client secret</tt> needs to be generated at Google, follow these
+<a class="reference external" href="https://rclone.org/drive/#making-your-own-client-id">instructions</a> to do this.</blockquote>
+<p>In my case, I needed to go to <a class="reference external" href="https://console.developers.google.com/">Google APIs</a>, make sure that my project
+<tt class="docutils literal">Viltstigen</tt> where selected (it is by default). Then select &quot;Credentials&quot; to the left on the web page. A number of
+previously generated &quot;API keys&quot; will be visible. I selected &quot;API Key 7&quot;, then selected the &quot;Create Credentials&quot; drop
+down menu (blue), followed by &quot;OAuth client ID&quot;. New page, select option &quot;Other&quot;, type in a &quot;Name&quot; and click &quot;Create&quot;.
+A pop-up screen appears with &quot;client ID&quot; and &quot;client Secret&quot; visible, keep them for the script below.</p>
+<p>Note also that I have choosen a &quot;root_folder_id&quot; below, following the instructions
+<a class="reference external" href="https://rclone.org/drive/#root-folder-id">here</a>. Essentially, using the Google Drive web interface, create a new
+folder (e.g. &quot;rpi_bck&quot;), then move into this folder and copy the last part of the URL.</p>
+<div class="highlight"><pre><span></span>pi@rpi1:~/bck $ rclone config
+Current remotes:
+
+Name                 <span class="nv">Type</span>
+<span class="o">====</span>                 <span class="o">====</span>
+google_drive         drive
+
+e<span class="o">)</span> Edit existing remote
+n<span class="o">)</span> New remote
+d<span class="o">)</span> Delete remote
+r<span class="o">)</span> Rename remote
+c<span class="o">)</span> Copy remote
+s<span class="o">)</span> Set configuration password
+q<span class="o">)</span> Quit config
+e/n/d/r/c/s/q&gt; d
+Choose a number from below, or <span class="nb">type</span> in an existing value
+ <span class="m">1</span> &gt; google_drive
+remote&gt; <span class="m">1</span>
+No remotes found - make a new one
+n<span class="o">)</span> New remote
+s<span class="o">)</span> Set configuration password
+q<span class="o">)</span> Quit config
+n/s/q&gt; n
+name&gt; google_drive
+Type of storage to configure.
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+Choose a number from below, or <span class="nb">type</span> in your own value
+ <span class="m">1</span> / 1Fichier
+   <span class="se">\ </span><span class="s2">&quot;fichier&quot;</span>
+ <span class="m">2</span> / Alias <span class="k">for</span> an existing remote
+   <span class="se">\ </span><span class="s2">&quot;alias&quot;</span>
+ <span class="m">3</span> / Amazon Drive
+   <span class="se">\ </span><span class="s2">&quot;amazon cloud drive&quot;</span>
+ <span class="m">4</span> / Amazon S3 Compliant Storage Provider <span class="o">(</span>AWS, Alibaba, Ceph, Digital Ocean, Dreamhost, IBM COS, Minio, etc<span class="o">)</span>
+   <span class="se">\ </span><span class="s2">&quot;s3&quot;</span>
+ <span class="m">5</span> / Backblaze B2
+   <span class="se">\ </span><span class="s2">&quot;b2&quot;</span>
+ <span class="m">6</span> / Box
+   <span class="se">\ </span><span class="s2">&quot;box&quot;</span>
+ <span class="m">7</span> / Cache a remote
+   <span class="se">\ </span><span class="s2">&quot;cache&quot;</span>
+ <span class="m">8</span> / Citrix Sharefile
+   <span class="se">\ </span><span class="s2">&quot;sharefile&quot;</span>
+ <span class="m">9</span> / Dropbox
+   <span class="se">\ </span><span class="s2">&quot;dropbox&quot;</span>
+<span class="m">10</span> / Encrypt/Decrypt a remote
+   <span class="se">\ </span><span class="s2">&quot;crypt&quot;</span>
+<span class="m">11</span> / FTP Connection
+   <span class="se">\ </span><span class="s2">&quot;ftp&quot;</span>
+<span class="m">12</span> / Google Cloud Storage <span class="o">(</span>this is not Google Drive<span class="o">)</span>
+   <span class="se">\ </span><span class="s2">&quot;google cloud storage&quot;</span>
+<span class="m">13</span> / Google Drive
+   <span class="se">\ </span><span class="s2">&quot;drive&quot;</span>
+<span class="m">14</span> / Google Photos
+   <span class="se">\ </span><span class="s2">&quot;google photos&quot;</span>
+<span class="m">15</span> / Hubic
+   <span class="se">\ </span><span class="s2">&quot;hubic&quot;</span>
+<span class="m">16</span> / JottaCloud
+   <span class="se">\ </span><span class="s2">&quot;jottacloud&quot;</span>
+<span class="m">17</span> / Koofr
+   <span class="se">\ </span><span class="s2">&quot;koofr&quot;</span>
+<span class="m">18</span> / Local Disk
+   <span class="se">\ </span><span class="s2">&quot;local&quot;</span>
+<span class="m">19</span> / Mail.ru Cloud
+   <span class="se">\ </span><span class="s2">&quot;mailru&quot;</span>
+<span class="m">20</span> / Mega
+   <span class="se">\ </span><span class="s2">&quot;mega&quot;</span>
+<span class="m">21</span> / Microsoft Azure Blob Storage
+   <span class="se">\ </span><span class="s2">&quot;azureblob&quot;</span>
+<span class="m">22</span> / Microsoft OneDrive
+   <span class="se">\ </span><span class="s2">&quot;onedrive&quot;</span>
+<span class="m">23</span> / OpenDrive
+   <span class="se">\ </span><span class="s2">&quot;opendrive&quot;</span>
+<span class="m">24</span> / Openstack Swift <span class="o">(</span>Rackspace Cloud Files, Memset Memstore, OVH<span class="o">)</span>
+   <span class="se">\ </span><span class="s2">&quot;swift&quot;</span>
+<span class="m">25</span> / Pcloud
+   <span class="se">\ </span><span class="s2">&quot;pcloud&quot;</span>
+<span class="m">26</span> / Put.io
+   <span class="se">\ </span><span class="s2">&quot;putio&quot;</span>
+<span class="m">27</span> / QingCloud Object Storage
+   <span class="se">\ </span><span class="s2">&quot;qingstor&quot;</span>
+<span class="m">28</span> / SSH/SFTP Connection
+   <span class="se">\ </span><span class="s2">&quot;sftp&quot;</span>
+<span class="m">29</span> / Transparently chunk/split large files
+   <span class="se">\ </span><span class="s2">&quot;chunker&quot;</span>
+<span class="m">30</span> / Union merges the contents of several remotes
+   <span class="se">\ </span><span class="s2">&quot;union&quot;</span>
+<span class="m">31</span> / Webdav
+   <span class="se">\ </span><span class="s2">&quot;webdav&quot;</span>
+<span class="m">32</span> / Yandex Disk
+   <span class="se">\ </span><span class="s2">&quot;yandex&quot;</span>
+<span class="m">33</span> / http Connection
+   <span class="se">\ </span><span class="s2">&quot;http&quot;</span>
+<span class="m">34</span> / premiumize.me
+   <span class="se">\ </span><span class="s2">&quot;premiumizeme&quot;</span>
+Storage&gt; <span class="m">13</span>
+** See <span class="nb">help</span> <span class="k">for</span> drive backend at: https://rclone.org/drive/ **
+
+Google Application Client Id
+Setting your own is recommended.
+See https://rclone.org/drive/#making-your-own-client-id <span class="k">for</span> how to create your own.
+If you leave this blank, it will use an internal key which is low performance.
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+client_id&gt; <span class="m">929026972983</span>-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com
+Google Application Client Secret
+Setting your own is recommended.
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+client_secret&gt; ADn... <span class="o">[</span>secret<span class="o">]</span>
+Scope that rclone should use when requesting access from drive.
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+Choose a number from below, or <span class="nb">type</span> in your own value
+ <span class="m">1</span> / Full access all files, excluding Application Data Folder.
+   <span class="se">\ </span><span class="s2">&quot;drive&quot;</span>
+ <span class="m">2</span> / Read-only access to file metadata and file contents.
+   <span class="se">\ </span><span class="s2">&quot;drive.readonly&quot;</span>
+   / Access to files created by rclone only.
+ <span class="m">3</span> <span class="p">|</span> These are visible in the drive website.
+   <span class="p">|</span> File authorization is revoked when the user deauthorizes the app.
+   <span class="se">\ </span><span class="s2">&quot;drive.file&quot;</span>
+   / Allows <span class="nb">read</span> and write access to the Application Data folder.
+ <span class="m">4</span> <span class="p">|</span> This is not visible in the drive website.
+   <span class="se">\ </span><span class="s2">&quot;drive.appfolder&quot;</span>
+   / Allows read-only access to file metadata but
+ <span class="m">5</span> <span class="p">|</span> does not allow any access to <span class="nb">read</span> or download file content.
+   <span class="se">\ </span><span class="s2">&quot;drive.metadata.readonly&quot;</span>
+scope&gt; <span class="m">3</span>
+ID of the root folder
+Leave blank normally.
+
+Fill in to access <span class="s2">&quot;Computers&quot;</span> folders <span class="o">(</span>see docs<span class="o">)</span>, or <span class="k">for</span> rclone to use
+a non root folder as its starting point.
+
+Note that <span class="k">if</span> this is blank, the first <span class="nb">time</span> rclone runs it will fill it
+in with the ID of the root folder.
+
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+root_folder_id&gt; 1fMjA9uqc7cqphmsdW7DUhmdFQ9Ib44Ti
+Service Account Credentials JSON file path
+Leave blank normally.
+Needed only <span class="k">if</span> you want use SA instead of interactive login.
+Enter a string value. Press Enter <span class="k">for</span> the default <span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">)</span>.
+service_account_file&gt;
+Edit advanced config? <span class="o">(</span>y/n<span class="o">)</span>
+y<span class="o">)</span> Yes
+n<span class="o">)</span> No
+y/n&gt; n
+Remote config
+Use auto config?
+ * Say Y <span class="k">if</span> not sure
+ * Say N <span class="k">if</span> you are working on a remote or headless machine
+y<span class="o">)</span> Yes
+n<span class="o">)</span> No
+y/n&gt; n
+If your browser doesn<span class="err">&#39;</span>t open automatically go to the following link: https://accounts.google.com/o/oauth2/auth?access_type<span class="o">=</span>offline<span class="p">&amp;</span><span class="nv">client_id</span><span class="o">=</span><span class="m">929026972983</span>-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com<span class="p">&amp;</span><span class="nv">redirect_uri</span><span class="o">=</span>urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob<span class="p">&amp;</span><span class="nv">response_type</span><span class="o">=</span>code<span class="p">&amp;</span><span class="nv">scope</span><span class="o">=</span>https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file<span class="p">&amp;</span><span class="nv">state</span><span class="o">=</span>zNJXAabBYq3h47mRFBBDPQ
+Log in and authorize rclone <span class="k">for</span> access
+Enter verification code&gt; <span class="m">4</span>/vgFZnvkQPNbnaZsTLaUsrylS7feY0vhiJIFIuT19GzQl9pAQd9oCeag
+Configure this as a team drive?
+y<span class="o">)</span> Yes
+n<span class="o">)</span> No
+y/n&gt; n
+--------------------
+<span class="o">[</span>google_drive<span class="o">]</span>
+<span class="nb">type</span> <span class="o">=</span> drive
+<span class="nv">client_id</span> <span class="o">=</span> <span class="m">929026972983</span>-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com
+<span class="nv">client_secret</span> <span class="o">=</span> ADnKctAeKLK-BUrRiimgg4Np
+<span class="nv">scope</span> <span class="o">=</span> drive.file
+<span class="nv">root_folder_id</span> <span class="o">=</span> 1fMjA9uqc7cqphmsdW7DUhmdFQ9Ib44Ti
+<span class="nv">token</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;access_token&quot;</span>:<span class="s2">&quot;ya29.Il-6B94wEV6RU36hajNWRva4xAUWO_FoUfOBGI3iWAMyPRZr5ZIFO9sadE-oBksypv5vWVEUVNSQDIvPFX1TriqfGgjtdOlEG102-1mAeTfALnBUuOhtZ7rqpff4dXOPsg&quot;</span>,<span class="s2">&quot;token_type&quot;</span>:<span class="s2">&quot;Bearer&quot;</span>,<span class="s2">&quot;refresh_token&quot;</span>:<span class="s2">&quot;1//0c_Fz_obvU3LpCgYIARAAGAwSNwF-L9IrWuIw7flrX2ggHHLPNoS2PL7vALudrrE1NYJmIghUfeRoIUXg9qyINwRAcf62Ps7yGoo&quot;</span>,<span class="s2">&quot;expiry&quot;</span>:<span class="s2">&quot;2020-01-18T17:09:31.820516378+01:00&quot;</span><span class="o">}</span>
+--------------------
+y<span class="o">)</span> Yes this is OK
+e<span class="o">)</span> Edit this remote
+d<span class="o">)</span> Delete this remote
+y/e/d&gt; y
+Current remotes:
+
+Name                 <span class="nv">Type</span>
+<span class="o">====</span>                 <span class="o">====</span>
+google_drive         drive
+
+e<span class="o">)</span> Edit existing remote
+n<span class="o">)</span> New remote
+d<span class="o">)</span> Delete remote
+r<span class="o">)</span> Rename remote
+c<span class="o">)</span> Copy remote
+s<span class="o">)</span> Set configuration password
+q<span class="o">)</span> Quit config
+e/n/d/r/c/s/q&gt; q
+</pre></div>
+<p>Now try rclone by copying a file (e.g. &quot;backup.log&quot;) to &quot;google_drive&quot; and create a new folder &quot;rpi1&quot;. Then list
+content in &quot;google_drive&quot;, folder &quot;rpi&quot; to verify that the file is there. Finally list folders visible in &quot;google_drive&quot;.</p>
+<div class="highlight"><pre><span></span>pi@rpi1:~/bck $ rclone copy backup.log google_drive:rpi1
+pi@rpi1:~/bck $ rclone ls google_drive:rpi1
+  <span class="m">1104214</span> backup.log
+pi@rpi1:~/bck $ rclone lsd google_drive:
+          -1 <span class="m">2020</span>-01-18 <span class="m">16</span>:10:44        -1 rpi1
+</pre></div>
+</div>
+<div class="section" id="backup">
+<h2>Backup</h2>
+<p>Now <tt class="docutils literal">rclone</tt> can be used to backup files to Google Drive.</p>
+<div class="section" id="rpi1-backup">
+<h3>rpi1 backup</h3>
+<p><strong>rpi1</strong> have an additional USB memory installed. Production data is stored in Mongo database.</p>
+<p>Plug the USB memory into a USB port and it should be automatically mounted by the raspberry on <tt class="docutils literal">/dev/sda*</tt>,
+for example <tt class="docutils literal">/dev/sda1</tt>.</p>
+<p>To check availability do</p>
+<div class="highlight"><pre><span></span>$ sudo lsblk -f
+
+NAME        FSTYPE LABEL    UUID                                 MOUNTPOINT
+sda
+└─sda1      vfat            8F3F-8E75                            /media/pi/8F3F-8E75
+mmcblk0
+├─mmcblk0p1 vfat   RECOVERY <span class="m">6363</span>-3634
+├─mmcblk0p2
+├─mmcblk0p5 ext4   SETTINGS 444485b7-f8cb-4f4c-8b9a-6fedf94efed1 /media/pi/SETTINGS
+├─mmcblk0p6 vfat   boot     <span class="m">0181</span>-4B93                            /boot
+└─mmcblk0p7 ext4   root     65b49769-3b56-43b9-b037-bf4a8da3a41a /
+</pre></div>
+<p>Note the mount point for the USB memory stick <tt class="docutils literal"><span class="pre">/media/pi/8F3F-8E75</span></tt>, make a softlink for more convenient access,
+for example <tt class="docutils literal">$ ln <span class="pre">-s</span> <span class="pre">/media/pi/8F3F-8E75/</span> /home/pi/bck/</tt>.</p>
+<p>If needed format the USB memory stick through <tt class="docutils literal">$ sudo mkfs.vfat /dev/sda1 <span class="pre">-n</span> untitled</tt>.
+If the mkfs.vfat command is not available install &quot;dosfstools&quot; first through <tt class="docutils literal">$ sudo <span class="pre">apt-get</span> install dosfstools</tt>.</p>
+<p>Now add the following content into a file named backup.sh:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#</span>
+<span class="c1"># Daily backup from /etc/crontab</span>
+<span class="c1">#</span>
+<span class="c1"># Adopted from &lt;https://help.ubuntu.com/lts/serverguide/backup-shellscripts.html&gt;</span>
+<span class="c1"># and &lt;http://www.tldp.org/LDP/solrhe/Securing-  Optimizing-Linux-RH-Edition-v1.3/chap29sec306.html&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># To list: tar -tzvf /home/pi/bck/host-Monday.tgz</span>
+<span class="c1"># To restore: tar -xzvf /home/pi/bck/host-Monday.tgz -C /tmp etc/hosts (restore /etc/hosts file to /etc/tmp/hosts)</span>
+<span class="c1"># Notice the leading &quot;/&quot; is left off the path of the file to restore.</span>
+<span class="c1"># To restore all (overwrites everything):</span>
+<span class="c1">#   cd</span>
+<span class="c1">#   sudo tar -xzvf /home/pi/bck/host-Monday.tgz</span>
+
+<span class="c1"># What to backup</span>
+<span class="nv">backup_files</span><span class="o">=</span><span class="s2">&quot;/home/pi/.ssh /home/pi/app&quot;</span>
+
+<span class="c1"># Where to backup to.</span>
+<span class="c1"># Note, this is a softlinked directory to /media/pi/8F3F-8E75/bck which resides on a separate USB  flash memory</span>
+<span class="nv">dest</span><span class="o">=</span><span class="s2">&quot;/home/pi/bck&quot;</span>
+
+<span class="c1"># Create archive filename.</span>
+<span class="nv">day</span><span class="o">=</span><span class="k">$(</span>date +%A<span class="k">)</span>
+<span class="nv">hostname</span><span class="o">=</span><span class="k">$(</span>hostname -s<span class="k">)</span>
+<span class="nv">archive_file</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$hostname</span><span class="s2">-</span><span class="nv">$day</span><span class="s2">.tgz&quot;</span>
+
+<span class="c1"># Print start status message.</span>
+<span class="nb">echo</span> <span class="s2">&quot;-----&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;Backing up </span><span class="nv">$backup_files</span><span class="s2"> to </span><span class="nv">$dest</span><span class="s2">/</span><span class="nv">$archive_file</span><span class="s2">&quot;</span>
+date
+<span class="nb">echo</span>
+
+<span class="c1"># Backup the files using tar.</span>
+tar czf <span class="nv">$dest</span>/<span class="nv">$archive_file</span> <span class="nv">$backup_files</span>
+
+<span class="c1"># Print end status message.</span>
+<span class="nb">echo</span>
+<span class="nb">echo</span> <span class="s2">&quot;Backup finished&quot;</span>
+date
+
+<span class="c1"># Long listing of files in $dest to check file sizes.</span>
+ls -lh <span class="nv">$dest</span>/
+<span class="nb">echo</span> <span class="s2">&quot;-----&quot;</span>
+</pre></div>
+<p>Then do <tt class="docutils literal">$ chmod a+x backup.sh</tt>, the script is executed through user crontab (not /etc/crontab) by inserting this line</p>
+<div class="highlight"><pre><span></span><span class="m">00</span> <span class="m">2</span>    * * *   sh /home/pi/rpi1/app/RPiscripts/backup.sh &gt;&gt; /home/pi/bck/backup.log <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</pre></div>
+<p>Thus, by 2:00am the script is executed. Note that the folder <tt class="docutils literal">home/pi/app</tt> is included although no production data
+is there. I then upload to Google Drive by this line in the same crontab at 4:00am.</p>
+<div class="highlight"><pre><span></span><span class="m">00</span> <span class="m">4</span>    * * *   rclone sync /home/pi/bck/ google_drive:rpi1
+</pre></div>
+</div>
+<div class="section" id="rpi3-backup">
+<h3>rpi3 backup</h3>
+<p>For <strong>rpi3</strong> I have 2 files that is of &quot;production type&quot;, ie generated by a program. These are synched to Google Drive
+once per hour from crontab entries</p>
+<div class="highlight"><pre><span></span><span class="m">0</span> * * * * rclone sync /home/pi/app/spots/radar/spots_stats.json google_drive:spots
+<span class="m">0</span> * * * * rclone sync /home/pi/app/spots/radar/spots_stats.json.1 google_drive:spots
+</pre></div>
+<p><strong>Note</strong></p>
+<blockquote>
+When google_drive is setup when installing rclone on <strong>rpi3</strong>, the root is different compared to <strong>rpi1</strong>.
+For <strong>rpi3</strong> it points to <tt class="docutils literal">rpi_bck/rpi3</tt> on Google Drive, while for <strong>rpi1</strong> it points to <tt class="docutils literal">`rpi_bck</tt>.
+Thus, for <strong>rpi1</strong> an additional suffix is needed to store files at <tt class="docutils literal">rpi_bck/rpi1</tt> by using <tt class="docutils literal">google_drive:rpi1</tt>
+in rclone commands on <strong>rpi1</strong> compared to <strong>rpi3</strong>.</blockquote>
+</div>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/18/raspberry-backup-using-rclone/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-18T00:00:00+01:00">Jan 18, 2020</time>
+<h4>Last Updated</h4>
+<time datetime="2020-01-29T00:00:00+01:00">Jan 29, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#google-drive-ref">Google Drive
+                    <span>1</span>
+</a></li>
+                <li><a href="https://wlog.viltstigen.se/tags.html#raspberry-ref">Raspberry
+                    <span>6</span>
+</a></li>
+                <li><a href="https://wlog.viltstigen.se/tags.html#rclone-ref">rclone
+                    <span>1</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

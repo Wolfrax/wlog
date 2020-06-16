@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="D3, Maps, Technologies, " />
+
+<meta property="og:title" content="Map of Sweden #1 "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/26/map-of-sweden-1/" />
+<meta property="og:description" content="Introduction This is a description on how to use D3, Data Driven Documents, to visualize and manipulate maps objects. The end result is visible here. The project is available on Github (link). Making a map of Sweden First, we need to find some data describing the geometry we want. While …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-26T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-03-01T00:00:00+01:00" />
+<meta name="twitter:title" content="Map of Sweden #1 ">
+<meta name="twitter:description" content="Introduction This is a description on how to use D3, Data Driven Documents, to visualize and manipulate maps objects. The end result is visible here. The project is available on Github (link). Making a map of Sweden First, we need to find some data describing the geometry we want. While …">
+
+        <title>Map of Sweden #1  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/26/map-of-sweden-1/">
+                Map of Sweden #1
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>This is a description on how to use <a class="reference external" href="https://d3js.org/">D3</a>, Data Driven Documents, to visualize and manipulate maps
+objects.</p>
+<p>The end result is visible <a class="reference external" href="https://www.viltstigen.se/clover/index.html">here</a>.
+The project is available on Github (<a class="reference external" href="https://github.com/Wolfrax/clover">link</a>).</p>
+</div>
+<div class="section" id="making-a-map-of-sweden">
+<h2>Making a map of Sweden</h2>
+<p>First, we need to find some data describing the geometry we want. While there are several sources to choose from,
+in this case I will be using <a class="reference external" href="https://www.naturalearthdata.com/">Natural Earth</a> that are providing a wealth of
+datasets in different scales for free. As I'm interested in Sweden and some of its administrative subunits (countys)
+for my project, only a selection of shapefiles is needed. Below I provide links to zip-archives for shapefiles in the
+scale of 1:10 million.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details">NE 1:10m admin 0 details</a></li>
+<li><a class="reference external" href="https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_1_states_provinces.zip">NE 1:10m admin 1 state provinces</a></li>
+<li><a class="reference external" href="https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_populated_places.zip">NE 1:10m populated places</a></li>
+</ul>
+<p>For the first zip-archive link, according to Natural Earth it includes:</p>
+<blockquote>
+Countries subdivided by non-contiguous units. Mainland metropolitan France separate from the island of Corsica.
+These rarely correspond to actual administrative divisions but rather highlight geographical regions that are not
+continuous but are part of the same country. (<a class="reference external" href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-details/">Link</a>)</blockquote>
+<p>For the second zip-archive link, Natural Earth says that we get:</p>
+<blockquote>
+Internal, first-order administrative boundaries and polygons for all but a few tiny countries. (<a class="reference external" href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-1-states-provinces/">Link</a>)</blockquote>
+<p>The third link includes shape files city and town points:</p>
+<blockquote>
+Point symbols with name attributes. Includes all admin-0 and many admin-1 capitals, major cities and towns,
+plus a sampling of smaller towns in sparsely inhabited regions. (<a class="reference external" href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/">Link</a>)</blockquote>
+<p>We now have shapefiles which includes the geometry we want to use as a subset. How do we go from here?
+For the purpose of rendering using D3, we need to filter out the geometries I'm looking for, then transform the
+geometries from the original format in a 2-step approach; first transform into <a class="reference external" href="https://en.wikipedia.org/wiki/GeoJSON">GeoJSON</a>
+and then into <a class="reference external" href="https://en.wikipedia.org/wiki/GeoJSON#TopoJSON">TopoJSON</a>.
+For this we need to use tools, the <a class="reference external" href="https://gdal.org/programs/ogr2ogr.html">ogr2ogr</a> tool and
+<a class="reference external" href="https://github.com/topojson/topojson/wiki">topjson</a> respectively.</p>
+<p><strong>ogr2ogr</strong> is part of <a class="reference external" href="https://gdal.org/">GDAL</a> and official binaries for download can be found
+<a class="reference external" href="http://trac.osgeo.org/gdal/wiki/DownloadingGdalBinaries">here</a>.</p>
+<p>For Mac, go this way</p>
+<div class="highlight"><pre><span></span>$ brew install gdal
+</pre></div>
+<p>On a raspberry pi, running raspbian, the following commands should work (I have not tried):</p>
+<div class="highlight"><pre><span></span>$ sudo apt-get update
+$ sudo apt-get install gdal-bin
+</pre></div>
+<p><strong>topojson</strong> tool is installed (on Mac at least) by</p>
+<div class="highlight"><pre><span></span>$ npm install -g topojson@1
+</pre></div>
+<p>(Install npm using this command: <tt class="docutils literal">$ brew install node</tt>)</p>
+<p>Unzip the shapefiles above, then try</p>
+<div class="highlight"><pre><span></span>$ ogr2ogr -f GeoJSON -where <span class="s2">&quot;ADM0_A3 = &#39;SWE&#39;&quot;</span> subunits.json ne_10m_admin_1_states_provinces.shp
+</pre></div>
+<p>This should produce a new file subunits.json. The input parameters to ogr2ogr is straightforward:</p>
+<ul class="simple">
+<li><strong>-f</strong> GeoJSON says that the output file format should be GeoJSON, subunits.json is the name of the output file and
+ne_10m_admin_1_states_provinces.shp is the input file.</li>
+<li><strong>-where</strong> is the filter parameter with a SQL-like syntax, the trick is here to know that we want to filter on the
+condition that ADM0_A3 should be equal to SWE. ADM0 refers to Admin-0, the highest level administrative boundaries,
+and A3 refers to <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3">ISO 3166-1 alpha-3</a> country codes.</li>
+</ul>
+<p>Now we can convert from GeoJSON to TopeJSON using topojson tool like so</p>
+<div class="highlight"><pre><span></span>$ topojson -o swe.json --properties -- subunits.json
+</pre></div>
+<p>Here we ask topojson to create output file swe.json and use subunits.json as input.
+If everything is working correctly, we now have swe.json in topoJSON format that D3 can read and display, shown below.</p>
+<div class="section" id="use-d3-to-draw-a-map">
+<h3>Use D3 to draw a map</h3>
+<p>Let's start using D3, a javascript library to manipulate HTML documents using data.
+We need to combine D3 with a simple HTML document, the skeleton for the HTML5 document is</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Map<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//d3js.org/d3.v3.js&quot;</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//d3js.org/topojson.v1.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+<p>Now we need to include some D3 javascript code between the &lt;script&gt; and &lt;/script&gt; tags. Like so,</p>
+<div class="highlight"><pre><span></span><span class="kr">const</span> <span class="nx">width</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">600</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">svg</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;svg&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nx">width</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="nx">height</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">projection</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">geo</span><span class="p">.</span><span class="nx">mercator</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">center</span><span class="p">([</span><span class="mf">14.6</span><span class="p">,</span> <span class="mf">62.1</span><span class="p">])</span>
+    <span class="p">.</span><span class="nx">scale</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">translate</span><span class="p">([</span><span class="nx">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]);</span>
+<span class="kd">let</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">geo</span><span class="p">.</span><span class="nx">path</span><span class="p">().</span><span class="nx">projection</span><span class="p">(</span><span class="nx">projection</span><span class="p">);</span>
+
+<span class="nx">d3</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="s2">&quot;swe.json&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">topojson</span><span class="p">.</span><span class="nx">feature</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">subunits</span><span class="p">).</span><span class="nx">features</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">enter</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;fill: grey&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+<p>And that's it really, if we combine this together into a html file, e.g. swe.hmtl, and bring this up in a browser we
+should see a map of Sweden.</p>
+<p>What is the javascript code doing?</p>
+<p>In the let <tt class="docutils literal">svg = ...</tt>, I use the D3 selection - selecting the &lt;body&gt;-tag in the HTML code and appending an
+&lt;svg&gt;-tag with 2 attributes width and height. The projection variable is pointing to the d3 mercator function
+(this is a <a class="reference external" href="https://en.wikipedia.org/wiki/Mercator_projection">standard cylindrical map projection</a>).
+To this I center the map on the geographical mid point of Sweden (lat 62.1, lon 14.6), scale the image with factor
+1000 and translate all coordinates to the mid-values of width and height. Finally, I define the svg-path variable
+using the projection.</p>
+<p>d3.json() function reads the json-formated file swe.json that we created before. Then we use the selectAll
+function to add the tag &lt;map&gt; to svg for all data. The data is generated through the function call to topojson which
+will return an array of datapoints to draw.</p>
+<p>There is plenty of sites explaining and describing D3, so I am sketchy here.</p>
+<p>Result visible here.</p>
+<p>We get something like this.</p>
+<div class="align-center figure">
+<img alt="alternate text" src="https://wlog.viltstigen.se/img/sweden_with_places.png" style="width: 270px; height: 541px;" />
+<p class="caption">Map of Sweden</p>
+</div>
+</div>
+<div class="section" id="variations-of-the-map">
+<h3>Variations of the map</h3>
+<p>We can do more, for example include places by doing this</p>
+<div class="highlight"><pre><span></span>$ ogr2ogr -f GeoJSON -where <span class="s2">&quot;ISO_A2 = &#39;SE&#39; AND SCALERANK &lt;8&quot;</span> places.json ne_10m_populated_places.shp
+$ topojson -o swe.json -- subunits.json places.json
+</pre></div>
+<p>From the populated_places shape file (ne_10m_populated_places.shp) we have now filtered on Sweden using
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2</a> 2 letter code instead of the previous 3
+letter code (the choice of letter codes seems to be somewhat arbitrary...) and the major cities by using SCALERANK
+(see <a class="reference external" href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/">here</a> on SCALERANKS).
+Then we append this javascript code to draw the places:</p>
+<div class="highlight"><pre><span></span><span class="nx">svg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">datum</span><span class="p">(</span><span class="nx">topojson</span><span class="p">.</span><span class="nx">feature</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">places</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="nx">path</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;place&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/26/map-of-sweden-1/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-26T00:00:00+01:00">Jan 26, 2020</time>
+<h4>Last Updated</h4>
+<time datetime="2020-03-01T00:00:00+01:00">Mar 1, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#d3-ref">D3
+                    <span>4</span>
+</a></li>
+                <li><a href="https://wlog.viltstigen.se/tags.html#maps-ref">Maps
+                    <span>4</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

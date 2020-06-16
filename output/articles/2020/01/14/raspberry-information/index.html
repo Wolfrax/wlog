@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="Raspberry, Technologies, " />
+
+<meta property="og:title" content="Raspberry information "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/14/raspberry-information/" />
+<meta property="og:description" content="Introduction As I have several active raspberries in my home location, I tend to forget the details of them. For example, raspberry model, linux kernel version etc etc So I decided to write a script to collect this and expose it in a simple, crude tabular form at my home …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-14T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-01-14T00:00:00+01:00" />
+<meta name="twitter:title" content="Raspberry information ">
+<meta name="twitter:description" content="Introduction As I have several active raspberries in my home location, I tend to forget the details of them. For example, raspberry model, linux kernel version etc etc So I decided to write a script to collect this and expose it in a simple, crude tabular form at my home …">
+
+        <title>Raspberry information  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/14/raspberry-information/">
+                Raspberry information
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>As I have several active raspberries in my home location, I tend to forget the details of them.
+For example, raspberry model, linux kernel version etc etc
+So I decided to write a script to collect this and expose it in a simple, crude tabular form at my home page.
+Here is how it is done.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration</h2>
+<p>I have (currently) 5 raspberries in various models. They are named &quot;rpi1&quot;...&quot;rpi5&quot; and have been assigned static
+IP-addresses (192.168.1.51 to 192.168.1.55).</p>
+<p>The rpi1-node is running my web-server (nginx), collects information from the other raspberries and expose the result
+by generating a web-page using flask.</p>
+</div>
+<div class="section" id="raspberry-configuration">
+<h2>Raspberry configuration</h2>
+<p>Each raspberry is running a small python info-script, listening and responding on port 8094.
+All raspberries are protected with the &quot;uncomplicated firewall&quot; (UFW).
+To allow traffic on port 8094 do <tt class="docutils literal">$ sudo ufw allow from 192.168.1.0/24 to any port 8094</tt>, this will enable any type of
+traffic (TCP/UDP) from any node on the 192.168.1 network, others are blocked.</p>
+</div>
+<div class="section" id="information-to-collect">
+<h2>Information to collect</h2>
+<p>I want to collect and present the following information for each raspberry</p>
+<ul class="simple">
+<li>The host name and ip address</li>
+<li>Uptime and average load</li>
+<li>Raspberry model name</li>
+<li>Linux and raspbian versions</li>
+<li>CPU information</li>
+<li>Applications running on the raspberry</li>
+</ul>
+<p>Above is possible to read from various files in raspbian. Let's go through this.
+In rasbian (or more generally, in Linux) the kernel maintains a directory tree under the root <tt class="docutils literal">/proc</tt> where readable
+(ie text) files are found. So, the following is true</p>
+<ul class="simple">
+<li>hostname can be read from <tt class="docutils literal">/proc/sys/kernel/hostname</tt></li>
+<li>uptime can be read from <tt class="docutils literal">/proc/uptime</tt>. Note that this file have 2 numbers, both expressed in seconds, the
+first number is seconds since restart, the second number is seconds in idle (which is not interesting for me).
+We will need to convert seconds into a timestring to make it more readable, this is shown later on.</li>
+<li>average load can be read from /proc/loadavg. Note that it is the first three numbers that is of interest, there are
+in total 5 numbers. See <a class="footnote-reference" href="#id4" id="id1">[1]</a> for details</li>
+<li>raspberry model can be read from <tt class="docutils literal"><span class="pre">/proc/device-tree/model</span></tt>.</li>
+<li>linux version is read from <tt class="docutils literal">/proc/version</tt></li>
+<li>raspbian version is read from <tt class="docutils literal"><span class="pre">/etc/os-release</span></tt></li>
+<li>CPU information is read from <tt class="docutils literal">/proc/cpuinfo</tt></li>
+<li>Applications running on the raspberry is not read but hardcoded into the script</li>
+</ul>
+<p>Note that the information provided above needs to be formated to fit what I want.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation</h2>
+<p>Install flask, gunicorn and requests into the python virtual environment, below named &quot;info&quot;.</p>
+<div class="highlight"><pre><span></span>$ mkvirtualenv info
+$ pip install flask
+$ pip install gunicorn
+$ pip install requests
+</pre></div>
+<p>I will be using <a class="reference external" href="https://gunicorn.org/">gunicorn</a> as the WSGI web-server,
+<a class="reference external" href="http://flask.palletsprojects.com/en/1.1.x/">flask</a> as the web application (gunicorn receives HTTP requests and then
+communicate with flask using WSGI calling convention). The flask application will act as a proxy and ask for information
+from the other raspberries using requests, collect the information and return the information in JSON format to the
+calling client.</p>
+<p>Here is the main loop, comments below</p>
+<div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/info&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">info</span><span class="p">():</span>
+    <span class="n">rpi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rpi1&#39;</span><span class="p">:</span> <span class="n">format_info</span><span class="p">(</span><span class="n">get_info</span><span class="p">())}</span>
+    <span class="n">wait</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi2.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi2 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi3.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi3 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi4.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi4 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi5.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi5 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;info.html&quot;</span><span class="p">,</span> <span class="n">rpi</span><span class="o">=</span><span class="n">rpi</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>The flask app is started with host parameter value as 0.0.0.0 which means that other hosts can reach this app.
+Debugging is enabled.
+To bind this flask application to gunicorn, using port 8094 the following configuration file (which I name
+ìnfo_gunicorn.conf) exists.</p>
+<div class="highlight"><pre><span></span><span class="o">[</span>program:info_gunicorn<span class="o">]</span>
+<span class="nb">command</span> <span class="o">=</span> /home/pi/.virtualenvs/info/bin/python /home/pi/.virtualenvs/info/bin/gunicorn -b :8094 --reload emitter:app
+<span class="nv">directory</span> <span class="o">=</span> /home/pi/rpi1/info
+<span class="nv">user</span> <span class="o">=</span> root
+<span class="nv">autostart</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">autorestart</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="nv">startretries</span><span class="o">=</span><span class="m">3</span>
+<span class="nv">stdout_logfile</span> <span class="o">=</span> /var/log/supervisor/info_gunicorn.log
+<span class="nv">stderr_logfile</span> <span class="o">=</span> /var/log/supervisor/info_gunicorn.err
+</pre></div>
+<p>gunicorn and flask is running as a server on the rpi1 node and is supervised using <a class="reference external" href="http://supervisord.org/">http://supervisord.org/</a>.
+Check out the documentation to install this tool. The gunicorn configuration file should normally reside at
+<tt class="docutils literal">/etc/supervisor/conf.d</tt>, I have choosen to store this file elsewhere and provide a softlink from the conf.d
+directory to the configuration file.</p>
+<p>Finally, I have configured nginx with this location information</p>
+<div class="highlight"><pre><span></span><span class="k">location</span> <span class="s">/info</span> <span class="p">{</span>
+    <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri/</span> <span class="nv">$uri/index.html</span> <span class="nv">$uri.html</span> <span class="s">@info</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">location</span> <span class="s">@info</span> <span class="p">{</span>
+    <span class="c1"># proxy_pass http://rpi1.local; Note, a static IP address makes nginx more robust in case rpi1 is not running</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://192.168.1.50:8094</span><span class="p">;</span>
+    <span class="kn">proxy_redirect</span>     <span class="no">off</span><span class="p">;</span>
+    <span class="kn">proxy_set_header</span>   <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+    <span class="kn">proxy_set_header</span>   <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+    <span class="kn">proxy_set_header</span>   <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+    <span class="kn">proxy_set_header</span>   <span class="s">X-Forwarded-Host</span> <span class="nv">$server_name</span><span class="p">;</span>
+    <span class="kn">proxy_read_timeout</span> <span class="mi">300</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>In summary, a web client will ask for information using HTTP(S) connecting to nginx which will pass upstream to
+gunicorn listening on port 8094, gunicorn will communicate with the flask application, which in turn will communicate
+with the other raspberries, collect and format all information and return the result as HTML.</p>
+<p>To have nginx reading the location information do $ sudo service nginx restart. You want to check (and correct) syntax
+errors before restarting nginx using <tt class="docutils literal">$ sudo nginx <span class="pre">-t</span></tt>.</p>
+<p>In case you want to debug the flask application do this</p>
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">FLASK_APP</span><span class="o">=</span>emitter.py
+$ <span class="nb">export</span> <span class="nv">FLASK_DEBUG</span><span class="o">=</span><span class="m">1</span>
+$ flask run --host<span class="o">=</span><span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">8094</span>
+</pre></div>
+<p>Access the flask application in a web browser through <a class="reference external" href="http://rpi1.local:8094/info">http://rpi1.local:8094/info</a></p>
+<p>The python script above calls the other raspberries using requests, like so</p>
+<div class="highlight"><pre><span></span><span class="n">wait</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi2.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+    <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi2 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+</pre></div>
+<p>It will wait for 5.0 seconds before timing-out, assuming that the other raspberry is down and managing the exception.
+The results are formated (format_info) and stored into a dictionary named rpi.
+When the information has been collected, the flask function render_template is called with the rpi-dictionary as a
+parameter.</p>
+<p>The information is presented as a table with 5 rows and one column per raspberry. Therefore, in the script, I replace
+<tt class="docutils literal">/n</tt> with HTML <tt class="docutils literal">&lt;br&gt;</tt> and I use &quot;?&quot; as a marker in the information strings to know when to split into the 5 rows
+(see the function format_info below).
+The result is visible <a class="reference external" href="https://www.viltstigen.se/info">here</a>.</p>
+</div>
+<div class="section" id="full-listing">
+<h2>Full listing</h2>
+<p>Here is the complete script running on rpi1 <a class="footnote-reference" href="#id5" id="id2">[2]</a> followed by the flask template used (Note that I have hardcoded application information on row 4 in the get_info routine).</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Markup</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">check_output</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;mm&#39;</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">format_cpuinfo</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="n">s</span>
+    <span class="n">no_of_cores</span> <span class="o">=</span> <span class="s2">&quot;No of cores: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;processor</span><span class="se">\\</span><span class="s2">t:&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;model name&quot;</span><span class="p">):</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;BogoMIPS&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Features&quot;</span><span class="p">):</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;CPU implementer&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">hardware</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Hardware&quot;</span><span class="p">):]</span>
+    <span class="nb">print</span> <span class="n">no_of_cores</span> <span class="o">+</span> <span class="n">model_name</span> <span class="o">+</span> <span class="n">features</span> <span class="o">+</span> <span class="n">hardware</span>
+    <span class="k">return</span> <span class="n">no_of_cores</span> <span class="o">+</span> <span class="n">model_name</span> <span class="o">+</span> <span class="n">features</span> <span class="o">+</span> <span class="n">hardware</span>
+
+
+<span class="k">def</span> <span class="nf">get_info</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/sys/kernel/hostname&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">inf</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> \
+              <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;hostname&#39;</span><span class="p">,</span> <span class="s1">&#39;--all-ip-addresses&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="n">inf</span> <span class="o">+=</span> <span class="s2">&quot;Weather, EMC, Info, Vilt, Swind, nginx&quot;</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/uptime&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">up_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">ti</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">up_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">inf</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">ti</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/loadavg&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">load_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">load</span> <span class="o">=</span> <span class="n">load_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">inf</span> <span class="o">+=</span> <span class="n">load</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">load</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">load</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/device-tree/model&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/version&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">vers</span><span class="p">[:</span><span class="n">vers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/etc/os-release&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">ind1</span> <span class="o">=</span> <span class="n">vers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">ind2</span> <span class="o">=</span> <span class="n">vers</span><span class="p">[</span><span class="n">ind1</span><span class="p">:]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">ind1</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">vers</span><span class="p">[</span><span class="n">ind1</span><span class="p">:</span><span class="n">ind2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/cpuinfo&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">format_cpuinfo</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inf</span>
+
+
+<span class="k">def</span> <span class="nf">format_info</span><span class="p">(</span><span class="n">inf</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">inf_str</span> <span class="o">=</span> <span class="n">inf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">inf_str</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;apps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">inf_str</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;uptime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">inf_str</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">inf_str</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">inf_str</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/info&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">info</span><span class="p">():</span>
+    <span class="n">rpi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rpi1&#39;</span><span class="p">:</span> <span class="n">format_info</span><span class="p">(</span><span class="n">get_info</span><span class="p">())}</span>
+    <span class="n">wait</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi2.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi2 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi3.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi3 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi4.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi4 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://rpi5.local:8094/info&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">):</span>
+        <span class="n">rpi</span><span class="p">[</span><span class="s1">&#39;rpi5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;rpi5 (Down)&#39;</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;uptime&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span> <span class="s1">&#39;Down&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;info.html&quot;</span><span class="p">,</span> <span class="n">rpi</span><span class="o">=</span><span class="n">rpi</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>HTML template</p>
+<div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Raspberry info<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+        <span class="nt">table</span><span class="o">,</span> <span class="nt">th</span><span class="o">,</span> <span class="nt">td</span> <span class="p">{</span>
+            <span class="k">border</span><span class="p">:</span> <span class="mi">1</span><span class="kt">px</span> <span class="kc">solid</span> <span class="kc">black</span><span class="p">;</span>
+            <span class="k">border-collapse</span><span class="p">:</span> <span class="kc">collapse</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">table</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;width:100%&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>{{ rpi.rpi1.name }}<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>{{ rpi.rpi2.name }}<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>{{ rpi.rpi3.name }}<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>{{ rpi.rpi4.name }}<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>{{ rpi.rpi5.name }}<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Running<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi1.apps }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi2.apps }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi3.apps }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi4.apps }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi5.apps }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Uptime<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi1.uptime }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi2.uptime }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi3.uptime }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi4.uptime }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi5.uptime }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Version<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi1.version }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi2.version }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi3.version }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi4.version }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ rpi.rpi5.version }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>CPU<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">valign</span><span class="o">=</span><span class="s">&quot;top&quot;</span><span class="p">&gt;</span>{{ rpi.rpi1.cpu }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">valign</span><span class="o">=</span><span class="s">&quot;top&quot;</span><span class="p">&gt;</span>{{ rpi.rpi2.cpu }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">valign</span><span class="o">=</span><span class="s">&quot;top&quot;</span><span class="p">&gt;</span>{{ rpi.rpi3.cpu }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">valign</span><span class="o">=</span><span class="s">&quot;top&quot;</span><span class="p">&gt;</span>{{ rpi.rpi4.cpu }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">valign</span><span class="o">=</span><span class="s">&quot;top&quot;</span><span class="p">&gt;</span>{{ rpi.rpi5.cpu }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://elinux.org/RPi_HardwareHistory&quot;</span><span class="p">&gt;</span>RPi HardwareHistory<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://unix.stackexchange.com/questions/43539/what-do-the-flags-in-proc-cpuinfo-mean&quot;</span><span class="p">&gt;</span>CPU Info<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
+Copyright (C) Mats Melander
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+<p>The python scripts executing (and listening on port 8094 <a class="footnote-reference" href="#id6" id="id3">[3]</a>) on the other raspberries is a simple copy of the rpi1
+functions format_cpuinfo and get_info, like so (the same virtual environment, supervisor etc is installed per raspberry).</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">check_output</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;mm&#39;</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">format_cpuinfo</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="n">s</span>
+    <span class="n">no_of_cores</span> <span class="o">=</span> <span class="s2">&quot;No of cores: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;processor</span><span class="se">\\</span><span class="s2">t:&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;model name&quot;</span><span class="p">):</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;BogoMIPS&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Features&quot;</span><span class="p">):</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;CPU implementer&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="n">hardware</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Hardware&quot;</span><span class="p">):]</span>
+    <span class="nb">print</span> <span class="n">no_of_cores</span> <span class="o">+</span> <span class="n">model_name</span> <span class="o">+</span> <span class="n">features</span> <span class="o">+</span> <span class="n">hardware</span>
+    <span class="k">return</span> <span class="n">no_of_cores</span> <span class="o">+</span> <span class="n">model_name</span> <span class="o">+</span> <span class="n">features</span> <span class="o">+</span> <span class="n">hardware</span>
+
+
+<span class="k">def</span> <span class="nf">get_info</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/sys/kernel/hostname&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">inf</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> \
+              <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;hostname&#39;</span><span class="p">,</span> <span class="s1">&#39;--all-ip-addresses&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;) ?&quot;</span>
+
+    <span class="n">inf</span> <span class="o">+=</span> <span class="s2">&quot;Blog&quot;</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/uptime&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">up_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">ti</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">up_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">inf</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">ti</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/loadavg&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">load_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">load</span> <span class="o">=</span> <span class="n">load_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">inf</span> <span class="o">+=</span> <span class="n">load</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">load</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">load</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/device-tree/model&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/version&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">vers</span><span class="p">[:</span><span class="n">vers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/etc/os-release&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vers</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">ind1</span> <span class="o">=</span> <span class="n">vers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">ind2</span> <span class="o">=</span> <span class="n">vers</span><span class="p">[</span><span class="n">ind1</span><span class="p">:]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">ind1</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">vers</span><span class="p">[</span><span class="n">ind1</span><span class="p">:</span><span class="n">ind2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/proc/cpuinfo&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">inf</span> <span class="o">+=</span> <span class="n">format_cpuinfo</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inf</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/info&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">info</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">get_info</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>The first three fields in this file are load average figures giving the number of jobs in the run queue (state R) or
+waiting for disk I/O (state D) averaged over 1, 5, and 15 minutes. They are the same as the load average numbers given
+by uptime(1) and other programs.
+The fourth field consists of two numbers separated by a slash (/). The first of these is the number of currently
+executing kernel scheduling entities (processes, threads); this will be less than or equal to the number of CPUs.
+The value after the slash is the number of kernel scheduling entities that currently exist on the system.
+The fifth field is the PID of the process that was most recently created on the system.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>The extraction of information and formatting is pretty crude, not my proudest moment... ↩︎</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>I use Uncomplicated Firewall (UFW), so this needs to be configured to allow traffic on this port, for example
+<tt class="docutils literal">sudo ufw allow from 192.168.1.0/24 to any port 8094</tt></td></tr>
+</tbody>
+</table>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/14/raspberry-information/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-14T00:00:00+01:00">Jan 14, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#raspberry-ref">Raspberry
+                    <span>6</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>

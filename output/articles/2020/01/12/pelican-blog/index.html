@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mats Melander" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content="Blog, Pelican, Technologies, " />
+
+<meta property="og:title" content="Pelican blog "/>
+<meta property="og:url" content="https://wlog.viltstigen.se/articles/2020/01/12/pelican-blog/" />
+<meta property="og:description" content="Using Pelican as blog software. Follow installation instructions here. I use rpi1-node as front-end to external requests, but my production part of this blog resides on node rpi2. Subdomain management I created a new subdomain to viltstigen.se called wlog.viltstigen.se at Binero. This was partly a necessity …" />
+<meta property="og:site_name" content="Wolfblog" />
+<meta property="og:article:author" content="Mats Melander" />
+<meta property="og:article:published_time" content="2020-01-12T00:00:00+01:00" />
+<meta property="og:article:modified_time" content="2020-05-01T00:00:00+02:00" />
+<meta name="twitter:title" content="Pelican blog ">
+<meta name="twitter:description" content="Using Pelican as blog software. Follow installation instructions here. I use rpi1-node as front-end to external requests, but my production part of this blog resides on node rpi2. Subdomain management I created a new subdomain to viltstigen.se called wlog.viltstigen.se at Binero. This was partly a necessity …">
+
+        <title>Pelican blog  · Wolfblog
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/elegant.prod.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://wlog.viltstigen.se/theme/css/custom.css" media="screen">
+
+        <link href="https://wlog.viltstigen.se/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wolfblog - Full Atom Feed" />
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97010459-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+
+    </head>
+    <body>
+        <div id="content">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="https://wlog.viltstigen.se/"><span class=site-name>Wolfblog</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul class="nav pull-right top-menu">
+                                <li >
+                                    <a href=
+                                       https://wlog.viltstigen.se
+                                    >Home</a>
+                                </li>
+                                <li ><a href="https://wlog.viltstigen.se/pages/about/">About</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/categories.html">Categories</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/tags.html">Tags</a></li>
+                                <li ><a href="https://wlog.viltstigen.se/archives.html">Archives</a></li>
+                                <li><form class="navbar-search" action="https://wlog.viltstigen.se/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span1"></div>
+                    <div class="span10">
+<article itemscope>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+        <h1>
+            <a href="https://wlog.viltstigen.se/articles/2020/01/12/pelican-blog/">
+                Pelican blog
+            </a>
+        </h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+            
+            <p>Using <a class="reference external" href="https://blog.getpelican.com/">Pelican</a>  as blog software.
+Follow installation instructions <a class="reference external" href="https://docs.getpelican.com/en/stable/install.html">here</a>.</p>
+<p>I use <strong>rpi1</strong>-node as front-end to external requests, but my production part of this blog resides on node <strong>rpi2</strong>.</p>
+<div class="section" id="subdomain-management">
+<h2>Subdomain management</h2>
+<p>I created a new subdomain to <tt class="docutils literal">viltstigen.se</tt> called <tt class="docutils literal">wlog.viltstigen.se</tt> at Binero. This was partly a necessity due
+to my configuration and how Pelican works (by default).
+Pelican uses relative paths of getting resources, e.g. <tt class="docutils literal">/theme/css/admonition.css</tt>, not absolute URL paths.
+I use nginx as proxy on rpi1, where my DynDNS is pointing to. An HTTP request to <tt class="docutils literal">wlog.viltstigen.se</tt> is directed
+to this node. <strong>rpi1</strong> is configured (see nginx configuration below) to forward the request to <strong>rpi2</strong> where a nginx
+web-server is running and will return requested resources through <strong>rpi1</strong>.</p>
+<p>If I would have had the blog on, for example, <tt class="docutils literal">www.viltstigen.se/blog/index.html</tt> (on my existing subdomain),
+I could have configured nginx on rpi1 to forward all requests on the resource <tt class="docutils literal">/blog/index.html</tt> to <strong>rpi2</strong>.
+However all subsequent requests from the client would use paths relative to <tt class="docutils literal">www.viltstigen.se</tt> and thus fail.</p>
+<p>Example,  using <strong>www</strong> subdomain instead of <strong>wlog</strong>:</p>
+<blockquote>
+<p><strong>https://www.viltstigen.se/blog/index.html</strong> would include the link
+<strong>https://www.viltstigen.se/theme/css/elegant.prod.css</strong>.
+As nginx would be configured to forward requests on <strong>/blog/</strong> to <strong>rpi2</strong> the subsequent resource request on
+<strong>/theme/css/</strong> would look locally at <strong>rpi1</strong> rather than forwarding to <strong>rpi2</strong>.</p>
+<p>Therefore, as I use the <strong>wlog</strong> subdomain, and forward all requests on this subdomain from <strong>rpi1</strong>
+to <strong>rpi2</strong>, the subsequent link in index.html is <strong>https://wlog.viltstigen.se/theme/css/elegant.prod.css</strong>.</p>
+</blockquote>
+<p>As there is a new subdomain created, dynDNS at Binero needs to be updated accordingly, see
+<a class="reference external" href="https://wlog.viltstigen.se/articles/2020/01/11/dyndns/">DynDNS</a>.</p>
+</div>
+<div class="section" id="using-ssl">
+<h2>Using SSL</h2>
+<p>I want to enable <a class="reference external" href="https://en.wikipedia.org/wiki/Transport_Layer_Security">SSL</a> so that
+<a class="reference external" href="https://en.wikipedia.org/wiki/HTTPS">https</a> can be used for my blog. A certificate is needed, for this purpose I use
+<a class="reference external" href="https://letsencrypt.org/">Let's Encrypt</a>. In the nginx configuration on <strong>rpi1</strong> HTTP-access is redirected to HTTPS.
+The certificate is installed on rpi1. Below assumes that <strong>Let's Encrypt</strong> software is already installed.</p>
+<div class="highlight"><pre><span></span>$ sudo ./letsencrypt-auto certonly -a webroot --webroot-path<span class="o">=</span>/usr/share/nginx/html -d wlog.viltstigen.se
+/opt/eff.org/certbot/venv/local/lib/python2.7/site-packages/cryptography/hazmat/bindings/openssl/binding.py:163: CryptographyDeprecationWarning: OpenSSL version <span class="m">1</span>.0.1 is no longer supported by the OpenSSL project, please upgrade. The next version of cryptography will drop support <span class="k">for</span> it.
+  utils.CryptographyDeprecationWarning
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator webroot, Installer None
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge <span class="k">for</span> wlog.viltstigen.se
+Using the webroot path /usr/share/nginx/html <span class="k">for</span> all unmatched domains.
+Waiting <span class="k">for</span> verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/wlog.viltstigen.se/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/wlog.viltstigen.se/privkey.pem
+   Your cert will expire on <span class="m">2020</span>-03-29. To obtain a new or tweaked
+   version of this certificate in the future, simply run
+   letsencrypt-auto again. To non-interactively renew *all* of your
+   certificates, run <span class="s2">&quot;letsencrypt-auto renew&quot;</span>
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let<span class="err">&#39;</span>s Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+</pre></div>
+<p>Check auto-renewal of certificates by</p>
+<div class="highlight"><pre><span></span>$ sudo /opt/letsencrypt/letsencrypt-auto renew
+/opt/eff.org/certbot/venv/local/lib/python2.7/site-packages/cryptography/hazmat/bindings/openssl/binding.py:163: CryptographyDeprecationWarning: OpenSSL version <span class="m">1</span>.0.1 is no longer supported by the OpenSSL project, please upgrade. The next version of cryptography will drop support <span class="k">for</span> it.
+  utils.CryptographyDeprecationWarning
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Processing /etc/letsencrypt/renewal/wlog.viltstigen.se.conf
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Cert not yet due <span class="k">for</span> renewal
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Processing /etc/letsencrypt/renewal/www.viltstigen.se.conf
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Cert not yet due <span class="k">for</span> renewal
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+The following certs are not due <span class="k">for</span> renewal yet:
+  /etc/letsencrypt/live/wlog.viltstigen.se/fullchain.pem expires on <span class="m">2020</span>-03-29 <span class="o">(</span>skipped<span class="o">)</span>
+  /etc/letsencrypt/live/www.viltstigen.se/fullchain.pem expires on <span class="m">2020</span>-03-29 <span class="o">(</span>skipped<span class="o">)</span>
+No renewals were attempted.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</pre></div>
+<p>In crontab on <strong>rpi1</strong>, auto renenwal is executing by these lines</p>
+<div class="highlight"><pre><span></span><span class="m">30</span> <span class="m">2</span>    * * <span class="m">1</span>   root    /opt/letsencrypt/letsencrypt-auto renew &gt;&gt; /var/log/le-renew.log
+<span class="m">35</span> <span class="m">2</span>    * * <span class="m">1</span>   root    /bin/systemctl reload nginx
+</pre></div>
+</div>
+<div class="section" id="nginx-configuration">
+<h2>nginx configuration</h2>
+<p>In <tt class="docutils literal"><span class="pre">/etc/nginx/sites-enabled/wolfrax.conf</span></tt> on <strong>rpi1</strong> add these sections</p>
+<div class="highlight"><pre><span></span><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="s">[::]:80</span><span class="p">;</span>
+
+    <span class="kn">server_name</span> <span class="s">wlog.viltstigen.se</span><span class="p">;</span>
+
+    <span class="c1"># This will redirect http traffic to server below using https</span>
+    <span class="kn">return</span> <span class="mi">301</span> <span class="s">https://</span><span class="nv">$server_name$request_uri</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">server</span> <span class="p">{</span>
+    <span class="c1"># Reverse proxy to rpi2.local (192.168.1.51)</span>
+    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">ssl</span><span class="p">;</span>
+
+    <span class="kn">server_name</span> <span class="s">wlog.viltstigen.se</span><span class="p">;</span>
+
+    <span class="c1"># SSL configuration</span>
+    <span class="kn">include</span> <span class="s">snippets/ssl-wlog.viltstigen.se.conf</span><span class="p">;</span>
+    <span class="kn">include</span> <span class="s">snippets/ssl-params.conf</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">proxy_pass</span> <span class="s">http://192.168.1.51</span><span class="p">;</span> <span class="c1"># rpi2.local</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="s">/.well-known/</span> <span class="p">{}</span>  <span class="c1"># do not redirect for this directory, used by letsencrypt</span>
+<span class="p">}</span>
+</pre></div>
+<p>Note the last row for <strong>location /.well-known/</strong>, this exclude the directory &quot;.well-known&quot; which is used by
+<strong>letsencrypt</strong> when renewing the cerificate. (letsencrypt stores information in this directory when renewing the
+certificate, hence we should not move requests upstreams or the renewal will fail).</p>
+<p>In snippets-directory on <strong>rpi1</strong> add file <tt class="docutils literal"><span class="pre">ssl-wlog-viltstigen.se.conf</span></tt> with this content</p>
+<div class="highlight"><pre><span></span><span class="k">ssl_certificate</span> <span class="s">/etc/letsencrypt/live/wlog.viltstigen.se/fullchain.pem</span><span class="p">;</span>
+<span class="k">ssl_certificate_key</span> <span class="s">/etc/letsencrypt/live/wlog.viltstigen.se/privkey.pem</span><span class="p">;</span>
+</pre></div>
+<p>No need to update &quot;ssl-params.conf&quot; file on <strong>rpi1</strong>.</p>
+<p>Softlink the file (as I use a separate directory structure for my nginx files)</p>
+<div class="highlight"><pre><span></span>$ sudo ln -s /home/pi/rpi1/etc/nginx/snippets/ssl-wlog.viltstigen.se.conf /etc/nginx/snippets/ssl-wlog.viltstigen.se.conf
+</pre></div>
+<p>Check nginx and restart</p>
+<div class="highlight"><pre><span></span>$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf <span class="nb">test</span> is successful
+$ sudo systemctl restart nginx
+</pre></div>
+<p>On <strong>rpi2</strong>, create a new file <tt class="docutils literal">wolfrax.conf</tt> with this content (<tt class="docutils literal">/clover/</tt> is used for another web application, not
+connected to Pelican blog, on <strong>rpi2</strong>).</p>
+<div class="highlight"><pre><span></span><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="s">[::]:80</span> <span class="s">default_server</span><span class="p">;</span>
+
+    <span class="kn">root</span> <span class="s">/var/www/html</span><span class="p">;</span>
+
+    <span class="kn">index</span> <span class="s">index.html</span> <span class="s">index.htm</span> <span class="s">index.nginx-debian.html</span><span class="p">;</span>
+
+    <span class="kn">server_name</span> <span class="s">_</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="c1"># First attempt to serve request as file, then</span>
+        <span class="c1"># as directory, then fall back to displaying a 404.</span>
+        <span class="kn">root</span> <span class="s">/home/pi/app/wlog/</span><span class="p">;</span>
+        <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri/</span> <span class="p">=</span><span class="mi">404</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="s">/clover/</span> <span class="p">{</span>
+        <span class="c1"># First attempt to serve request as file, then</span>
+        <span class="c1"># as directory, then fall back to displaying a 404.</span>
+        <span class="kn">root</span> <span class="s">/var/www/html/</span><span class="p">;</span>
+        <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri/</span> <span class="p">=</span><span class="mi">404</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>Using the files in the RPi-project, soft link files</p>
+<div class="highlight"><pre><span></span><span class="k">$</span> <span class="s">sudo</span> <span class="s">mv</span> <span class="s">/etc/nginx/nginx.conf</span> <span class="s">/etc/nginx/nginx.conf_OLD</span>
+$ <span class="s">sudo</span> <span class="s">rm</span> <span class="s">/etc/nginx/sites-enabled/default</span>  <span class="c1"># Remove default config, softlinked from sites-available, if exists</span>
+$ <span class="s">sudo</span> <span class="s">ln</span> <span class="s">-s</span> <span class="s">/home/pi/rpi2/etc/nginx/nginx.conf</span> <span class="s">/etc/nginx/nginx.conf</span>
+$ <span class="s">sudo</span> <span class="s">ln</span> <span class="s">-s</span> <span class="s">/home/pi/rpi2/etc/nginx/sites-enabled/wolfrax.conf</span> <span class="s">/etc/nginx/sites-enabled/wolfrax.conf</span>
+$ <span class="s">sudo</span> <span class="s">nginx</span> <span class="s">-t</span>
+<span class="s">nginx:</span> <span class="s">the</span> <span class="s">configuration</span> <span class="s">file</span> <span class="s">/etc/nginx/nginx.conf</span> <span class="s">syntax</span> <span class="s">is</span> <span class="s">ok</span>
+<span class="s">nginx:</span> <span class="s">configuration</span> <span class="s">file</span> <span class="s">/etc/nginx/nginx.conf</span> <span class="s">test</span> <span class="s">is</span> <span class="s">successful</span>
+$ <span class="s">sudo</span> <span class="s">service</span> <span class="s">nginx</span> <span class="s">restart</span>
+</pre></div>
+</div>
+<div class="section" id="pelican-settings">
+<h2>Pelican settings</h2>
+<p>Using a PyCharm project <strong>wlog</strong> for blog updates, create new directories under <tt class="docutils literal">wlog/content/</tt>:
+'pdf', 'img', 'articles', 'pages'. Then update <tt class="docutils literal">pelicanconf.py</tt> with</p>
+<div class="highlight"><pre><span></span><span class="n">SOCIAL</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="s1">&#39;mats.melander@gmail.com&#39;</span><span class="p">),</span>
+          <span class="p">(</span><span class="s1">&#39;Github&#39;</span><span class="p">,</span> <span class="s1">&#39;https://github.com/wolfrax&#39;</span><span class="p">),)</span>
+
+<span class="n">THEME</span> <span class="o">=</span> <span class="s2">&quot;elegant&quot;</span>
+
+<span class="n">ARTICLE_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;articles&#39;</span><span class="p">]</span>
+<span class="n">STATIC_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">,</span> <span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">]</span>
+<span class="n">PAGE_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pages&#39;</span><span class="p">]</span>
+<span class="n">ARTICLE_URL</span> <span class="o">=</span> <span class="s1">&#39;articles/{date:%Y}/{date:%m}/{date:</span><span class="si">%d</span><span class="s1">}/</span><span class="si">{slug}</span><span class="s1">/&#39;</span>
+<span class="n">ARTICLE_SAVE_AS</span> <span class="o">=</span> <span class="s1">&#39;articles/{date:%Y}/{date:%m}/{date:</span><span class="si">%d</span><span class="s1">}/</span><span class="si">{slug}</span><span class="s1">/index.html&#39;</span>
+<span class="n">PAGE_URL</span> <span class="o">=</span> <span class="s1">&#39;pages/</span><span class="si">{slug}</span><span class="s1">/&#39;</span>
+<span class="n">PAGE_SAVE_AS</span> <span class="o">=</span> <span class="s1">&#39;pages/</span><span class="si">{slug}</span><span class="s1">/index.html&#39;</span>
+<span class="n">CATEGORY_URL</span> <span class="o">=</span> <span class="s1">&#39;category/</span><span class="si">{slug}</span><span class="s1">&#39;</span>
+<span class="n">CATEGORY_SAVE_AS</span> <span class="o">=</span> <span class="s1">&#39;category/</span><span class="si">{slug}</span><span class="s1">/index.html&#39;</span>
+<span class="n">TAG_URL</span> <span class="o">=</span> <span class="s1">&#39;tag/</span><span class="si">{slug}</span><span class="s1">&#39;</span>
+<span class="n">TAG_SAVE_AS</span> <span class="o">=</span> <span class="s1">&#39;tag/</span><span class="si">{slug}</span><span class="s1">/index.html&#39;</span>
+<span class="n">EXTRA_PATH_METADATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;extra/robots.txt&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;robots.txt&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;extra/favicon.ico&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;favicon.ico&#39;</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+             
+
+
+<script src="https://wlog.viltstigen.se/theme/applause-button/applause-button.js"></script>
+<div class="applause_button">
+    <applause-button url=https://wlog.viltstigen.se/articles/2020/01/12/pelican-blog/> </applause-button>
+</div>
+
+ 
+            
+            
+            
+
+
+
+
+
+
+            <hr/>
+        </div>
+        <section id="article-sidebar" class="span2">
+            <h4>Published</h4>
+            <time itemprop="dateCreated" datetime="2020-01-12T00:00:00+01:00">Jan 12, 2020</time>
+<h4>Last Updated</h4>
+<time datetime="2020-05-01T00:00:00+02:00">May 1, 2020</time>
+
+            <h4>Category</h4>
+            <a class="category-link" href="https://wlog.viltstigen.se/categories.html#technologies-ref">Technologies</a>
+            <h4>Tags</h4>
+            <ul class="list-of-tags tags-in-article">
+                <li><a href="https://wlog.viltstigen.se/tags.html#blog-ref">Blog
+                    <span>2</span>
+</a></li>
+                <li><a href="https://wlog.viltstigen.se/tags.html#pelican-ref">Pelican
+                    <span>2</span>
+</a></li>
+            </ul>
+<h4>Contact</h4>
+<div id="sidebar-social-link">
+    <a href="mailto:mats.melander@gmail.com" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="Mail" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#328cff"/><path d="m250 186c-46 0-69 35-69 74 0 44 29 72 68 72 43 0 73-32 73-75 0-44-34-71-72-71zm-1-37c30 0 57 13 77 33 0-22 35-22 35 1v150c-1 10 10 16 16 9 25-25 54-128-14-187-64-56-149-47-195-15-48 33-79 107-49 175 33 76 126 99 182 76 28-12 41 26 12 39-45 19-168 17-225-82-38-68-36-185 67-248 78-46 182-33 244 32 66 69 62 197-2 246-28 23-71 1-71-32v-11c-20 20-47 32-77 32-57 0-108-51-108-108 0-58 51-110 108-110" fill="#fff"/></svg>
+    </a>
+    <a href="https://github.com/wolfrax" title="" target="_blank" rel="nofollow noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub" role="img" viewBox="0 0 512 512"><rect width="512" height="512" rx="15%" fill="#1B1817"/><path fill="#fff" d="M335 499c14 0 12 17 12 17H165s-2-17 12-17c13 0 16-6 16-12l-1-50c-71 16-86-28-86-28-12-30-28-37-28-37-24-16 1-16 1-16 26 2 40 26 40 26 22 39 59 28 74 22 2-17 9-28 16-35-57-6-116-28-116-126 0-28 10-51 26-69-3-6-11-32 3-67 0 0 21-7 70 26 42-12 86-12 128 0 49-33 70-26 70-26 14 35 6 61 3 67 16 18 26 41 26 69 0 98-60 120-117 126 10 8 18 24 18 48l-1 70c0 6 3 12 16 12z"/></svg>
+    </a>
+</div>
+            
+
+
+
+
+
+            
+
+
+
+
+
+        </section>
+</div>
+</article>
+                    </div>
+                    <div class="span1"></div>
+                </div>
+            </div>
+        </div>
+<footer>
+
+
+
+
+    <div id="fpowered">
+        Powered by: <a href="http://getpelican.com/" title="Pelican Home Page" target="_blank" rel="nofollow noopener noreferrer">Pelican</a>
+        Theme: <a href="https://elegant.oncrashreboot.com/" title="Theme Elegant Home Page" target="_blank" rel="nofollow noopener noreferrer">Elegant</a>
+    </div>
+</footer>            <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    <script>
+    (function () {
+        if (window.location.hash.match(/^#comment-\d+$/)) {
+            $('#comment_thread').collapse('show');
+        }
+    })();
+    window.onhashchange=function(){
+        if (window.location.hash.match(/^#comment-\d+$/))
+            window.location.reload(true);
+    }
+    $('#comment_thread').on('shown', function () {
+        var link = document.getElementById('comment-accordion-toggle');
+        var old_innerHTML = link.innerHTML;
+        $(link).fadeOut(200, function() {
+            $(this).text('Click here to hide comments').fadeIn(200);
+        });
+        $('#comment_thread').on('hidden', function () {
+            $(link).fadeOut(200, function() {
+                $(this).text(old_innerHTML).fadeIn(200);
+            });
+        })
+    })
+</script>
+
+    </body>
+    <!-- Theme: Elegant built for Pelican
+        License : MIT -->
+</html>
