@@ -4,9 +4,8 @@ Raspberry information
 :date: 2020-01-14
 :modified: 2020-01-14
 :tags: Raspberry
+:summary: A note on getting information on Raspberry Pi's
 
-Introduction
-============
 As I have several active raspberries in my home location, I tend to forget the details of them.
 For example, raspberry model, linux kernel version etc etc
 So I decided to write a script to collect this and expose it in a simple, crude tabular form at my home page.

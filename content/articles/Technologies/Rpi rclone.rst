@@ -4,9 +4,8 @@ Raspberry backup using rclone
 :date: 2020-01-18
 :modified: 2020-01-29
 :tags: Raspberry, Google Drive, rclone
+:summary: A note on using rclone and Google drive
 
-Introduction
-============
 Backing up raspberries using `rclone <https://rclone.org/drive/>`_ to Google drive.
 
 Installation of rclone

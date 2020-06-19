@@ -4,9 +4,8 @@ Map of Sweden #4
 :date: 2020-02-01
 :modified: 2020-02-01
 :tags: D3, Maps
+:summary: A note on making maps #4
 
-Introduction
-============
 By previous posts, I have shown how to create a map of Sweden, get meteorological observations from SMHI and visualize
 this on a map. What is lacking, is some decorations and interactions with the map.
 

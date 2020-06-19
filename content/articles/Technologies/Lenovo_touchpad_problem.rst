@@ -4,6 +4,7 @@ Lenovo Touchpad problem
 :date: 2020-02-01
 :modified: 2020-02-01
 :tags: Linux, Mint, Lenovo
+:summary: A note on fixing Lenovo Thinkpad Touchpad problems in Linux
 
 Using a Lenovo Thinkpad T440 with Linux Mint (4.15.0-70-generic) I have a problem with 2-finger scrolling using the
 touchpad. It stopped working after suspend/resume. This is a known problem affecting other models also.

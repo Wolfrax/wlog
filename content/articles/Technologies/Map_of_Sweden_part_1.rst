@@ -4,9 +4,8 @@ Map of Sweden #1
 :date: 2020-01-26
 :modified: 2020-03-01
 :tags: D3, Maps
+:summary: A note on making maps #1
 
-Introduction
-============
 This is a description on how to use `D3 <https://d3js.org/>`_, Data Driven Documents, to visualize and manipulate maps
 objects.
 

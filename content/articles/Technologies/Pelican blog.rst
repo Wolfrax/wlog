@@ -4,6 +4,7 @@ Pelican blog
 :date: 2020-01-12
 :modified: 2020-05-01
 :tags: Blog, Pelican
+:summary: A note on setting Pelican for blogging
 
 Using `Pelican <https://blog.getpelican.com/>`_  as blog software.
 Follow installation instructions `here <https://docs.getpelican.com/en/stable/install.html>`_.
@@ -200,7 +201,7 @@ connected to Pelican blog, on **rpi2**).
 
 Using the files in the RPi-project, soft link files
 
-.. code-block:: nginx
+.. code-block:: bash
 
     $ sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf_OLD
     $ sudo rm /etc/nginx/sites-enabled/default  # Remove default config, softlinked from sites-available, if exists
@@ -210,6 +211,41 @@ Using the files in the RPi-project, soft link files
     nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
     nginx: configuration file /etc/nginx/nginx.conf test is successful
     $ sudo service nginx restart
+
+Pelican themes
+==============
+To install pelican theme "elegant" clone the repo into the "themes" directory of pelican installation.
+Below pelican theme "elegant" is installed into a conda virtual environment ``/home/mm/anaconda3/envs/wlog``
+
+.. code-block:: bash
+
+    $ git clone https://github.com/Pelican-Elegant/elegant /home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/themes/elegant
+
+Update Pelican settings, see below.
+
+Pelican plugins
+===============
+Install all available plugins, specifically ``pelican-ipynb`` enabling using Jupyter notebooks.
+Below pelican plugins are installed into a conda virtual environment ``/home/mm/anaconda3/envs/wlog``
+
+.. code-block:: bash
+
+    $ git clone --recursive https://github.com/getpelican/pelican-plugins /home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins
+
+Then update ``pelicanconf.py``
+
+.. code-block:: python
+
+    PLUGIN_PATHS = ['/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins']
+    PLUGINS = ['sitemap', 'pelican-ipynb.markup']
+    MARKUP = ('md', 'ipynb')
+    IGNORE_FILES = ['.ipynb_checkpoints']
+
+For ``pelican-ipynb`` this library needs to be installed (not available at conda or conda-forge):
+
+.. code-block:: bash
+
+    $ pip install pelican-jupyter
 
 Pelican settings
 ================
@@ -238,3 +274,11 @@ Using a PyCharm project **wlog** for blog updates, create new directories under 
         'extra/robots.txt': {'path': 'robots.txt'},
         'extra/favicon.ico': {'path': 'favicon.ico'},
     }
+
+Pelican commands
+================
+Using make, these commands
+
+* ``make html`` and ``make serve``, will generate pages in ``output`` directory and then start a local server
+  http://localhost:8000/
+* ``make publish`` and ``make ssh_upload``, will generate for production and upload to the server (configured in Makefile)

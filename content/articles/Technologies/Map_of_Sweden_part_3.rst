@@ -4,9 +4,8 @@ Map of Sweden #3
 :date: 2020-01-31
 :modified: 2020-02-01
 :tags: D3, Maps
+:summary: A note on making maps #3
 
-Introduction
-============
 Now its time to make use of the data collected from SMHI and visualize them on top of the map of Sweden.
 As been shown in `Map of Sweden #2 <{filename}./Map_of_Sweden_part_2.rst>`__, an HTTP client can retrieve data from a
 server, this is done through `jQuery <https://jquery.com/>`_. A simple snippet like this

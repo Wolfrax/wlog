@@ -4,9 +4,8 @@ Raspberry setup
 :date: 2020-01-05
 :modified: 2020-02-09
 :tags: Raspberry
+:summary: A note on setting up Raspberry Pi
 
-Setup Raspbian
-==============
 Using `NOOBS <https://www.raspberrypi.org/downloads/noobs/>`_ to install
 `Raspian <https://www.raspbian.org/RaspbianAbout>`_. A SD card (>= 16GB) is needed.
 

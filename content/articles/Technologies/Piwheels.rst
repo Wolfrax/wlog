@@ -4,8 +4,7 @@ Piwheels
 :date: 2020-02-02
 :modified: 2020-02-02
 :tags: Python
-
-A note on piwheels.
+:summary: A note on piwheels
 
 The PyPi (Python Package Index) is the package repository for Python modules. **$ pip install** scouts this repository
 when installing modules. Some of the modules have been implemented in C, and thus require compilation for the specific

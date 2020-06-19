@@ -4,6 +4,7 @@ Pelican applause button
 :date: 2020-02-12
 :modified: 2020-02-12
 :tags: Blog, Pelican
+:summary: A note on using applause button
 
 For blog entries, the `applause button <https://applause-button.com/>`__ have been enabled in **pelicanconf.py** with
 this row

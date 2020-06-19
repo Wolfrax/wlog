@@ -4,6 +4,7 @@ Let's Encrypt
 :date: 2020-01-13
 :modified: 2020-05-01
 :tags: Raspberry, SSH, HTTPS
+:summary: A note on certificates and HTTPS
 
 The recommended way for web traffic is to use HTTPS which requires a certificate.
 There is a free certificate authority for this purpose, `Let's Encrypt <https://letsencrypt.org/>`_.

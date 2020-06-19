@@ -4,6 +4,7 @@ DynDNS
 :date: 2020-01-11
 :modified: 2020-01-11
 :tags: DNS
+:summary: A note dynamic DNS
 
 I use the domain `viltstigen.se <viltstigen.se>`_ with the obvious subdomain `www.viltstigen.se <www.viltstigen.se>`_.
 For this blog I have also included the subdomain `wlog <wlog.viltstigen.se>`_.

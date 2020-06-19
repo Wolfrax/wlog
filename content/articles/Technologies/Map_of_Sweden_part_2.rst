@@ -4,9 +4,8 @@ Map of Sweden #2
 :date: 2020-01-28
 :modified: 2020-01-28
 :tags: D3, Maps
+:summary: A note on making maps #2
 
-Introduction
-============
 In a previous post, I showed how to make a map of Sweden as a SVG object, derived from geometrical information,
 using D3. Here, I will focus of collecting meteorological observations from `SMHI <https://opendata.smhi.se/apidocs/metobs/index.html>`_
 and create a simple HTTP-server that will respond with the data when requested. This will be made through 2 simple

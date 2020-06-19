@@ -4,6 +4,7 @@ Raspberry backup using dropbox
 :date: 2020-01-25
 :modified: 2020-01-25
 :tags: Raspberry, Dropbox
+:summary: A note on using using dropbox
 
 Follow the recipe <https://www.raspberrypi.org/magpi/dropbox-raspberry-pi/>
 In Dropbox, create a new app (find the "..." in the right hand corner, selected Developer and Create App), choose

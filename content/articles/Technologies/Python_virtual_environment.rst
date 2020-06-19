@@ -4,7 +4,7 @@ Python virtual environment
 :date: 2020-02-02
 :modified: 2020-02-02
 :tags: Python
-
+:summary: A note on using Python virtual environments
 
 I use Python **virtualenv**, **virtualenvwrapper** and **autoenv**.
 

@@ -12,8 +12,6 @@ TIMEZONE = 'Europe/Paris'
 
 DEFAULT_LANG = 'en'
 
-APPLAUSE_BUTTON = True
-
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None
@@ -22,21 +20,27 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', 'http://getpelican.com/'),
-         ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),
-         ('You can modify those links in your config file', '#'),)
-
-# Social widget
-SOCIAL = (('Email', 'mats.melander@gmail.com'),
-          ('Github', 'https://github.com/wolfrax'),)
-
-DEFAULT_PAGINATION = 10
+LINKS = (('Viltstigen', 'https://www.viltstigen.se/'),
+         ('Wolfblog', 'http://wlog.viltstigen.se/'),
+         ('Github', 'https://github.com/wolfrax'),)
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
 
-THEME = "elegant"
+# bootstrap3 theme settings, see https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3
+THEME = "pelican-bootstrap3"
+JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
+PYGMENTS_STYLE = 'default'  # See https://help.farbox.com/pygments.html for examples
+SITELOGO = 'img/Wolf_logo.png'
+SITELOGO_SIZE = 30
+DISPLAY_ARTICLE_INFO_ON_INDEX = True
+DISPLAY_RECENT_POSTS_ON_SIDEBAR = True
+GITHUB_USER = "wolfrax"
+DISPLAY_PAGES_ON_MENU = True
+MENUITEMS = [('Archive', '/archives.html')]
+YEAR_ARCHIVE_SAVE_AS = 'archive/{date:%Y}/index.html'
+MONTH_ARCHIVE_SAVE_AS = 'archive/{date:%Y}/{date:%b}/index.html'
+DISPLAY_ARCHIVE_ON_SIDEBAR = True
 
 ARTICLE_PATHS = ['articles']
 STATIC_PATHS = ['img', 'pdf', 'extra', 'extra/robots.txt', 'extra/favicon.ico']
@@ -51,5 +55,21 @@ TAG_URL = 'tag/{slug}'
 TAG_SAVE_AS = 'tag/{slug}/index.html'
 EXTRA_PATH_METADATA = {
     'extra/robots.txt': {'path': 'robots.txt'},
-    'extra/favicon.ico': {'path': 'favicon.ico'},  # and this
+    'extra/favicon.ico': {'path': 'favicon.ico'},
 }
+
+# Plugins are installed (git clone) into the conda virtual environment for wlog
+PLUGIN_PATHS = ['/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins']
+
+# liquid_tags.notebook: For including Jupyter notebooks {% notebook example.ipynb % }
+#         See https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags#ipython-notebooks
+# i18n_subsites: For translations, needed for bootstrap3 theme
+#         See https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3#installation
+PLUGINS = ['liquid_tags.notebook', 'i18n_subsites']
+
+IGNORE_FILES = ['.ipynb_checkpoints']
+MARKUP = ("md", "ipynb")
+
+# Include the _nb_header.html styling file, generated automatically by liquid_tags.notebook at first run
+from io import open
+EXTRA_HEADER = open('_nb_header.html', encoding='utf-8').read()

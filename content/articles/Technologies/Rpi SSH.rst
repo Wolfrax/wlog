@@ -4,9 +4,7 @@ SSH
 :date: 2020-01-11
 :modified: 2020-03-02
 :tags: Raspberry, SSH
-
-Session without password
-========================
+:summary: A note on using SSH
 
 This describes how to connect with `SSH <https://en.wikipedia.org/wiki/Secure_Shell>`_
 

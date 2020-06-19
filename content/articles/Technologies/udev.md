@@ -1,10 +1,11 @@
 Title: Using udev
 Author: Mats Melander
 Date: 2020-02-22
+Modified: 2020-06-18
 Tags: Linux
 Category: Technologies
+Summary: A note on Linux device manager
 
-# Introduction
 **udev**, for **user** space **/dev**, is a device manager for Linux. It manages all nodes in the **/dev** directory as
 well as managing events when devices are added or removed.
 
@@ -14,7 +15,7 @@ For my purposes, I want to control consistent and permanent naming for specific 
 To have a permanent name in the **/dev** directory, such as **/dev/ttyEMC**, rather than **/dev/ttyUSB0** which may vary 
 over time to **/dev/ttyUSB1**, a **udev rules** file is available and soft linked to the `/etc/udev/rules.d` directory
 
-    sudo ln -s /home/pi/app/EMC/py/10-EMC.rules /etc/udev/rules.d/10-EMC.rules
+    $ sudo ln -s /home/pi/app/EMC/py/10-EMC.rules /etc/udev/rules.d/10-EMC.rules
 
 The syntax in the file follows the description at <https://wiki.archlinux.org/index.php/Udev>
 
