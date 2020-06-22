@@ -2,7 +2,7 @@ Raspberry information
 *********************
 
 :date: 2020-01-14
-:modified: 2020-01-14
+:modified: 2020-06-22
 :tags: Raspberry
 :summary: A note on getting information on Raspberry Pi's
 
@@ -15,7 +15,7 @@ Here is how it is done.
 Configuration
 =============
 I have (currently) 5 raspberries in various models. They are named "rpi1"..."rpi5" and have been assigned static
-IP-addresses (192.168.1.51 to 192.168.1.55).
+IP-addresses (192.168.1.50 to 192.168.1.54).
 
 The rpi1-node is running my web-server (nginx), collects information from the other raspberries and expose the result
 by generating a web-page using flask.
@@ -66,6 +66,16 @@ Install flask, gunicorn and requests into the python virtual environment, below 
     $ pip install flask
     $ pip install gunicorn
     $ pip install requests
+
+Or, using Python venv, creating ``.venv``, do
+
+.. code-block:: bash
+
+    $ python -m venv .venv
+    $ source .venv/bin/activate
+    (.venv) $ pip install flask
+    (.venv) $ pip install gunicorn
+    (.venv) $ pip install requests
 
 I will be using `gunicorn <https://gunicorn.org/>`_ as the WSGI web-server,
 `flask <http://flask.palletsprojects.com/en/1.1.x/>`_ as the web application (gunicorn receives HTTP requests and then
@@ -390,6 +400,8 @@ functions format_cpuinfo and get_info, like so (the same virtual environment, su
 
     def get_info():
         with open('/proc/sys/kernel/hostname', 'r') as f:
+            # NB! on Python 3, check_output needs to be decoded before replace (it returns byte)
+            #  check _output(['hostname', '--all-ip-addresses']).decode().replace(" \\n", "")
             inf = f.read().replace("\\n", " ") + \
                   "(" + check_output(['hostname', '--all-ip-addresses']).replace(" \\n", "") + ") ?"
 

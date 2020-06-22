@@ -2,7 +2,7 @@ Raspberry setup
 ***************
 
 :date: 2020-01-05
-:modified: 2020-02-09
+:modified: 2020-06-22
 :tags: Raspberry
 :summary: A note on setting up Raspberry Pi
 
@@ -46,12 +46,15 @@ Change the hostname to rpi1.
 
 Edit ``/etc/hosts``, change last row which states ``127.0.1.1 raspberrypi`` to ``127.0.1.1 rpi1``.
 Then edit ``/etc/hostname`` and add the wanted host name (rpi1).
-Make it take effect:
+
 
 .. code-block:: bash
 
     $ sudo /etc/init.d/hostname.sh
     $ sudo reboot
+
+Note! On raspbian Buster, ``/etc/init.d/hostname.sh`` has been removed. Easiest way is to change hostname using the GUI
+(Preferences/Raspberry Pi Configuration) instead.
 
 Timezone and Locale
 ###################

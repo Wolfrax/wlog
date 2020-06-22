@@ -2,7 +2,7 @@ SSH
 ***
 
 :date: 2020-01-11
-:modified: 2020-03-02
+:modified: 2020-06-22
 :tags: Raspberry, SSH
 :summary: A note on using SSH
 
@@ -11,7 +11,7 @@ This describes how to connect with `SSH <https://en.wikipedia.org/wiki/Secure_Sh
 To not provide password manually a public/private keys can be generated and stored at appropriate directories in host
 (private key) and target (public key).
 
-To generate keys on my MacBook and then store the public key on the raspberry host rpi1 do
+To generate keys on my host (Linux or MacBook) and then store the public key on the raspberry host ``rpi1`` do
 
 .. code-block:: bash
 
@@ -24,7 +24,7 @@ This will invoke to provide password for SSH.
 Make sure that directory ``.ssh`` exists on home directory for user pi at the raspberry host rpi1.
 If not do ``$ install -d -m 700 ~/.ssh`` at the rpi1 first
 
-Note, if file ``~/.ssh/id_rsa.pub`` already exists at host (Mac) there is no need to do ssh-keygen, simply do the last
+Note, if file ``~/.ssh/id_rsa.pub`` already exists at host there is no need to do ssh-keygen, simply do the last
 command above ($ cat ~/.ssh...).
 
 To remove an entry in ``~/.ssh/known_hosts`` do
@@ -35,7 +35,7 @@ To remove an entry in ``~/.ssh/known_hosts`` do
 
 See `SSH passwordless <https://www.raspberrypi.org/documentation/remote-access/ssh/passwordless.md>`_.
 
-If ssh tries to connect to a known IP address but receives a different ssh key from the one it got before,
+If ssh tries to connect to a known IP address but receives a different ssh key compared to the one it got before,
 it makes sense to treat this as a possible security problem and refuse to connect. This can happen if there is a new
 installation of Raspbian and most commonly manifests by the ssh client reporting something like:
 
@@ -50,8 +50,8 @@ installation of Raspbian and most commonly manifests by the ssh client reporting
     The fingerprint for the ECDSA key sent by the remote host is
     ...
 
-To mitigate this the local ssh client file ``known_hosts`` needs to be updated. Do this locally (Mac) assuming the
-issues occur while using ssh vs host 192.168.1.50 (rpi1.loca.).
+To mitigate this the local ssh client file ``known_hosts`` needs to be updated. Do this locally assuming the
+issues occur while using ssh vs host 192.168.1.50 (rpi1.local).
 
 .. code-block:: bash
 
@@ -64,7 +64,9 @@ occur. To find out which entry is for a known hostname in known_hosts:
 
     $ ssh-keygen -H  -F <hostname or IP address>
 
-To delete a single entry from known_hosts (remove both IP address and node name as needed:
+To delete a single entry from known_hosts (remove both IP address and node name as needed):
+
+.. code-block:: bash
 
     $ ssh-keygen -R <hostname or IP address>
 
