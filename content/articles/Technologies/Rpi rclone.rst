@@ -85,6 +85,7 @@ A pop-up screen appears with "client ID" and "client Secret" visible, keep them 
 Note also that I have choosen a "root_folder_id" below, following the instructions
 `here <https://rclone.org/drive/#root-folder-id>`_. Essentially, using the Google Drive web interface, create a new
 folder (e.g. "rpi_bck"), then move into this folder and copy the last part of the URL.
+The string "[...]", below is inserted in fields where I donät want to expose any information.
 
 .. code-block:: bash
 
@@ -191,11 +192,11 @@ folder (e.g. "rpi_bck"), then move into this folder and copy the last part of th
     See https://rclone.org/drive/#making-your-own-client-id for how to create your own.
     If you leave this blank, it will use an internal key which is low performance.
     Enter a string value. Press Enter for the default ("").
-    client_id> 929026972983-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com
+    client_id> [...]
     Google Application Client Secret
     Setting your own is recommended.
     Enter a string value. Press Enter for the default ("").
-    client_secret> ADn... [secret]
+    client_secret> [...]
     Scope that rclone should use when requesting access from drive.
     Enter a string value. Press Enter for the default ("").
     Choose a number from below, or type in your own value
@@ -224,7 +225,7 @@ folder (e.g. "rpi_bck"), then move into this folder and copy the last part of th
     in with the ID of the root folder.
 
     Enter a string value. Press Enter for the default ("").
-    root_folder_id> 1fMjA9uqc7cqphmsdW7DUhmdFQ9Ib44Ti
+    root_folder_id> [...]
     Service Account Credentials JSON file path
     Leave blank normally.
     Needed only if you want use SA instead of interactive login.
@@ -241,9 +242,9 @@ folder (e.g. "rpi_bck"), then move into this folder and copy the last part of th
     y) Yes
     n) No
     y/n> n
-    If your browser doesn't open automatically go to the following link: https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=929026972983-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file&state=zNJXAabBYq3h47mRFBBDPQ
+    If your browser doesn't open automatically go to the following link: [...]
     Log in and authorize rclone for access
-    Enter verification code> 4/vgFZnvkQPNbnaZsTLaUsrylS7feY0vhiJIFIuT19GzQl9pAQd9oCeag
+    Enter verification code> [...]
     Configure this as a team drive?
     y) Yes
     n) No
@@ -251,11 +252,11 @@ folder (e.g. "rpi_bck"), then move into this folder and copy the last part of th
     --------------------
     [google_drive]
     type = drive
-    client_id = 929026972983-ngnatjtaijm1hc18s2kg6rkcktjv4od8.apps.googleusercontent.com
-    client_secret = ADnKctAeKLK-BUrRiimgg4Np
+    client_id = [...]
+    client_secret = [...]
     scope = drive.file
-    root_folder_id = 1fMjA9uqc7cqphmsdW7DUhmdFQ9Ib44Ti
-    token = {"access_token":"ya29.Il-6B94wEV6RU36hajNWRva4xAUWO_FoUfOBGI3iWAMyPRZr5ZIFO9sadE-oBksypv5vWVEUVNSQDIvPFX1TriqfGgjtdOlEG102-1mAeTfALnBUuOhtZ7rqpff4dXOPsg","token_type":"Bearer","refresh_token":"1//0c_Fz_obvU3LpCgYIARAAGAwSNwF-L9IrWuIw7flrX2ggHHLPNoS2PL7vALudrrE1NYJmIghUfeRoIUXg9qyINwRAcf62Ps7yGoo","expiry":"2020-01-18T17:09:31.820516378+01:00"}
+    root_folder_id = [...]
+    token = {"access_token":"[...]","token_type":"Bearer","refresh_token":"[...]","expiry":"2020-01-18T17:09:31.820516378+01:00"}
     --------------------
     y) Yes this is OK
     e) Edit this remote
