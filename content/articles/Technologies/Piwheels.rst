@@ -2,11 +2,11 @@ Piwheels
 ********
 
 :date: 2020-02-02
-:modified: 2020-02-02
+:modified: 2020-07-07
 :tags: Python
 :summary: A note on piwheels
 
-The PyPi (Python Package Index) is the package repository for Python modules. **$ pip install** scouts this repository
+The PyPi (Python Package Index) is the package repository for Python modules. **pip install** scouts this repository
 when installing modules. Some of the modules have been implemented in C, and thus require compilation for the specific
 target installation. This takes time (and might fail).
 
@@ -23,4 +23,4 @@ should be included in **/etc/pip.conf**
     [global]
     extra-index-url=https://www.piwheels.org/simple
 
-For Raspbian Jessie: Upgrade pip to >=9.0.1 using **$ sudo pip3 install pip --upgrade**.
+For Raspbian >=Jessie: Upgrade pip to >=9.0.1 using **sudo pip3 install pip --upgrade**.
