@@ -1,7 +1,7 @@
 Title: Installing geopandas and geoplot on Raspberry Pi
 Author: Mats Melander
 Date: 2020-07-07
-Modified: 2020-07-07
+Modified: 2020-07-14
 Tags: Linux, Raspberry, GIS
 Category: Technologies
 Summary: Installing geopandas and geoplot on Raspberry Pi running buster
@@ -53,11 +53,25 @@ $ pip install pyproj==1.9.6
   needs to be installed. Then try to install <code>[geopandas](https://geopandas.readthedocs.io/en/latest/)</code> and
   <code>[geoplot](https://residentmario.github.io/geoplot/index.html)</code>
 - geopandas also depends on <code>[shapely](https://shapely.readthedocs.io/en/latest/)</code> and
-  <code>[rtree](https://github.com/Toblerity/rtree)</code>, these libraries will be installed by pip and is not explicitly
-  installed below
+  <code>[rtree](https://github.com/Toblerity/rtree)</code>. `rtree` installation is described below.
 ```bash
 $ sudo apt-get install libatlas-base-dev
 $ pip install geopandas
 $ pip install geoplot
 ```
 During my installation, I got error messages but the installation and setup still worked
+
+To install `rtree` I had to build the underlying library [libspatialindex](https://libspatialindex.org/) from source.
+Here is how (if cmake is not installed, use `apt-get install cmake`)
+```bash
+$ mkdir libspatialindex
+$ cd libspatialindex/
+$ wget https://github.com/libspatialindex/libspatialindex/releases/download/1.9.3/spatialindex-src-1.9.3.tar.gz
+$ tar -xvf spatialindex-src-1.9.3.tar.gz
+$ cd spatialindex-src-1.9.3/
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr/local .
+$ make
+$ sudo make install
+$ sudo ldconfig
+$ pip install rtree
+```
