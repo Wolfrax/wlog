@@ -35,7 +35,7 @@ Then restart the rsyslog daemon
 ```bash
 $ sudo systemctl restart rsyslog
 ```
-
+ 
 Should then be Ok.
 
 
