@@ -24,13 +24,13 @@ Specifically, there is some underlying dependencies of libraries
 
 The following recipe worked for me:
 
-- First install gdal and check version
+First install gdal and check version
 ```bash
     $ sudo apt-get install gdal-bin, libgdal-dev
     $ gdal-config --version
     2.4.0
 ```
-- Install `proj` version 6.3.2 using a tmp-directory, first install sqlite3 that `proj` is using
+Install `proj` version 6.3.2 using a tmp-directory, first install sqlite3 that `proj` is using
 ```bash
 $ sudo apt-get install sqlite3
 $ mkdir tmp
@@ -43,23 +43,18 @@ $ make
 $ sudo make install
 $ sudo ldconfig
 ```
-- Now install <code>[fiona](https://github.com/Toblerity/Fiona)</code> and 
+Now install <code>[fiona](https://github.com/Toblerity/Fiona)</code> and 
   <code>[pyproj](http://pyproj4.github.io/pyproj/stable/)</code> version 1.9.6
 ```bash
 $ pip install fiona
 $ pip install pyproj==1.9.6
 ```
-- Before we can install geoplot, the library <code>[libatlas](https://packages.debian.org/sid/libatlas-base-dev)</code>
+Before we can install geoplot, the library <code>[libatlas](https://packages.debian.org/sid/libatlas-base-dev)</code>
   needs to be installed. Then try to install <code>[geopandas](https://geopandas.readthedocs.io/en/latest/)</code> and
   <code>[geoplot](https://residentmario.github.io/geoplot/index.html)</code>
-- geopandas also depends on <code>[shapely](https://shapely.readthedocs.io/en/latest/)</code> and
-  <code>[rtree](https://github.com/Toblerity/rtree)</code>. `rtree` installation is described below.
-```bash
-$ sudo apt-get install libatlas-base-dev
-$ pip install geopandas
-$ pip install geoplot
-```
-During my installation, I got error messages but the installation and setup still worked
+
+geopandas also depends on <code>[shapely](https://shapely.readthedocs.io/en/latest/)</code> and
+  <code>[rtree](https://github.com/Toblerity/rtree)</code>.
 
 To install `rtree` I had to build the underlying library [libspatialindex](https://libspatialindex.org/) from source.
 Here is how (if cmake is not installed, use `apt-get install cmake`)
@@ -75,3 +70,21 @@ $ sudo make install
 $ sudo ldconfig
 $ pip install rtree
 ```
+To ensure that the correct version of `shapely` is used, don't install the binary. 
+I encountered errors like below due to wrong version of `shapely`, see [stackoverflow](https://stackoverflow.com/questions/60111684/geometry-must-be-a-point-or-linestring-error-using-cartopy)
+```text
+python: geos_ts_c.cpp:3991: int GEOSCoordSeq_getSize_r(GEOSContextHandle_t, const geos::geom::CoordinateSequence*, unsigned int*): Assertion `0 != cs' failed.
+```
+Below `shapely` is first uninstalled (as I used thw wrong version), then re-installed not using binary default option
+```bash
+$ pip uninstall shapely
+$ pip install shapely --no-binary shapely
+```
+Now finally install `libatlas`, `geopandas` and `geoplot`.
+```bash
+$ sudo apt-get install libatlas-base-dev
+$ pip install geopandas
+$ pip install geoplot
+```
+During my installation, I got error messages but the installation and setup still worked
+
