@@ -6,7 +6,7 @@ Tags: Linux, Raspberry
 Category: Technologies
 Summary: rsyslog daemon is recurrently adding entries to /var/log/syslog ("rsyslogd-2007: action 'action 18'")
 
-** rsyslog
+#rsyslog
 [ryslog](https://www.rsyslog.com/) is a logging system used in several Linux distributions, including raspbian.
 
 I noticed that on one of my Raspberrys (not all) I had recurrent log entries of type
