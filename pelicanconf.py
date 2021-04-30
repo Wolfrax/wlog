@@ -58,8 +58,8 @@ EXTRA_PATH_METADATA = {
     'extra/favicon.ico': {'path': 'favicon.ico'},
 }
 
-# Plugins are installed (git clone) into the conda virtual environment for wlog
-PLUGIN_PATHS = ['/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins']
+# Plugins are installed (git clone) into the virtual environment for wlog
+PLUGIN_PATHS = ['/home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/pelican-plugins']
 
 # liquid_tags.notebook: For including Jupyter notebooks {% notebook example.ipynb % }
 #         See https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags#ipython-notebooks
@@ -68,6 +68,7 @@ PLUGIN_PATHS = ['/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelica
 PLUGINS = ['liquid_tags.notebook', 'i18n_subsites']
 
 IGNORE_FILES = ['.ipynb_checkpoints']
+NOTEBOOK_DIR = 'notebooks'  # Next to articles in the content directory, store Jupyter notebooks here
 MARKUP = ("md", "ipynb")
 
 # Include the _nb_header.html styling file, generated automatically by liquid_tags.notebook at first run

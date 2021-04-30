@@ -1,7 +1,7 @@
 Title: Pelican bootstrap3 theme and Jupyter
 Author: Mats Melander
 Date: 2020-06-18
-Modified: 2020-06-18
+Modified: 2021-04-29
 Tags: Pelican
 Category: Technologies
 Summary: A note on using Pelican bootstrap3 theme
@@ -15,21 +15,25 @@ theme also.
 
 A few adaptions were needed to make this work.
 
-First install themes, for example (I am using conda and virtual environment "wlog") and plugins.
-Below will install **all** themes and plugins. As I am using a conda virtual environment, the full path is given.
+> Note, as of 2021-04-30, nbconvert version 5.x needs to be installed. If version 6.x
+> is used, there will be an error that the template basic cannot be found when generating pelican content
+> See [this note](https://github.com/danielfrg/pelican-jupyter/issues/126)
+
+First install themes, for example (using virtualenvironment venv) and plugins.
+Below will install **all** themes and plugins.
 
 ```bash
-git clone --recursive https://github.com/getpelican/pelican-themes /home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/themes/
-git clone --recursive https://github.com/getpelican/pelican-plugins /home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins
+git clone --recursive https://github.com/getpelican/pelican-themes /home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/themes
+git clone --recursive https://github.com/getpelican/pelican-plugins /home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/pelican-plugins
 ```
 I use the [liquid_tags](https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags#ipython-notebooks) 
-plugin to include Jupyter notebooks in blog articles without loosing the styling of these notebooks. See below and the
+plugin to include Jupyter notebooks in blog articles without losing the styling of these notebooks. See below and 
 liquid_tags documentation.
 
 Add this to `pelicanconf.py`, which enables 2 plugins
 ```python
 # Plugins are installed (git clone) into the conda virtual environment for wlog
-PLUGIN_PATHS = ['/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins']
+PLUGIN_PATHS = ['/home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/pelican-plugins']
 
 # liquid_tags.notebook: For including Jupyter notebooks {% notebook example.ipynb % }
 #         See https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags#ipython-notebooks
@@ -52,7 +56,7 @@ to content).
 Now add below at the top in the file `base.html` for the bootstrap theme, this will include `_nb_header.html`
 that is generated first time pelican generates content. `nb_header.html` includes all Jupyter notebook
 styling elements (Twitter bootstrap).
-(File located at `/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/themes`)
+(File located at `/home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/themes`)
 ```jinja2
 {% if EXTRA_HEADER %}
 {{ EXTRA_HEADER }}
@@ -63,8 +67,8 @@ Using the latest version of `liquid_tags.notebook` I encountered a problem proba
 ERROR: Could not process articles/Technologies/exmaple.md
   | NameError: name 'settings' is not defined
 ```
-In the file `notebook.py` I made the following update which fixed the problem for me (first row original code).
-(/home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/pelican-plugins/liquid_tags/notebook.py)
+In the file `notebook.py` I made the following update which fixed the problem for me (commented row is original code).
+(/home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/pelican-plugins/liquid_tags/notebook.py)
 ```python
     # nb_path = os.path.join(settings.get('PATH', 'content'), nb_dir, src)
     nb_path = os.path.join('content', nb_dir, src)
@@ -90,7 +94,7 @@ DISPLAY_ARCHIVE_ON_SIDEBAR = True
 
 To enable [applause button](https://applause-button.com/) into bootstrap3 theme for articles, some simple tweaks are needed.
 In the bootstrap3 file `article.html`, add the last 2 lines below.
-(Located at /home/mm/anaconda3/envs/wlog/lib/python3.8/site-packages/pelican/themes/pelican-bootstrap3/templates)
+(Located at /home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/themes/pelican-bootstrap3/templates)
 ```jinja2
 {% block meta %}
     {% if article.author %}

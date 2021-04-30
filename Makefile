@@ -8,7 +8,7 @@ OUTPUTDIR=$(BASEDIR)/output
 CONFFILE=$(BASEDIR)/pelicanconf.py
 PUBLISHCONF=$(BASEDIR)/publishconf.py
 
-SSH_HOST=rpi2.local
+SSH_HOST=192.168.1.51
 SSH_PORT=22
 SSH_USER=pi
 SSH_TARGET_DIR=/home/pi/app/wlog

@@ -23,7 +23,7 @@ CONFIG = {
     'deploy_path': SETTINGS['OUTPUT_PATH'],
     # Remote server configuration
     'ssh_user': 'pi',
-    'ssh_host': 'rpi2.local',
+    'ssh_host': '192.168.1.51',
     'ssh_port': '22',
     'ssh_path': '/home/pi/app/wlog',
     # Port for `serve`
