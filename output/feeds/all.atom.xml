@@ -1,5 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/all.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-04-29T00:00:00+02:00</updated><entry><title>rsyslog daemon filling syslog</title><link href="https://wlog.viltstigen.se/articles/2020/10/07/rsyslog-daemon-filling-syslog/" rel="alternate"></link><published>2020-10-07T00:00:00+02:00</published><updated>2020-10-07T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-10-07:/articles/2020/10/07/rsyslog-daemon-filling-syslog/</id><summary type="html">&lt;p&gt;rsyslog daemon is recurrently adding entries to /var/log/syslog ("rsyslogd-2007: action 'action 18'")&lt;/p&gt;</summary><content type="html">&lt;h1&gt;rsyslog&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/all.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-07-15T00:00:00+02:00</updated><entry><title>Setting referer policy when using applause button</title><link href="https://wlog.viltstigen.se/articles/2021/07/14/setting-referer-policy-when-using-applause-button/" rel="alternate"></link><published>2021-07-14T00:00:00+02:00</published><updated>2021-07-15T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-07-14:/articles/2021/07/14/setting-referer-policy-when-using-applause-button/</id><summary type="html">&lt;p&gt;Description on how, and why, to set referer policy when using applause button&lt;/p&gt;</summary><content type="html">&lt;p&gt;When blogging I use &lt;a href="https://applause-button.com/"&gt;applause button&lt;/a&gt; to allow claps and keep track of the number of
+claps I got (not many). How to use this with Pelican and the bootstrap3 theme is described 
+&lt;a href="https://wlog.viltstigen.se/articles/2020/06/18/pelican-bootstrap3-theme-and-jupyter/"&gt;here&lt;/a&gt; and
+&lt;a href="https://wlog.viltstigen.se/articles/2020/02/12/pelican-applause-button/"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In the second link, I describe how to query the number of claps and make a summary list.&lt;/p&gt;
+&lt;p&gt;Over time, I noticed a deviation from the number of claps stated in the summary list and what was shown in the
+blog entries. Investigating this, I noted that a claps where counted on the URI (in my case 'wlog.vilstigen.se') and not
+on individual blog entries (like "https://wlog.viltstigen.se/articles/2020/02/12/pelican-applause-button/"). &lt;/p&gt;
+&lt;p&gt;How come?&lt;/p&gt;
+&lt;p&gt;Previously, it looked like a clap was registered on the blog entry and not for the URI.&lt;/p&gt;
+&lt;p&gt;Checking the documentation for applause button I noted:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The applause button determines the URL that it should log a 'clap' for based on the HTTP referrer.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So, to register the clap on the full blog entry path, the "Referer" [sic] in the request header has to be set to the
+right value. Checking the referrer value with Chrome browser developer tools, this was not the case. It was set to 
+the URI.&lt;/p&gt;
+&lt;p&gt;In my configuration, I use nginx as a reverse-proxy. The reverse-proxy receives the browser request for a blog entry, 
+then it sends the request further upstream to another nginx server that acts as a web-server for pelican generated 
+blog content. The web-server responds and send the response downstream to the nginx reverse-proxy which in turn send 
+the response back to the browser. This is a common configuration using nginx.&lt;/p&gt;
+&lt;p&gt;After thinking on this, I suspected that my nginx configuration was not setup correctly. After some more checking, I
+found this applause-button reported &lt;a href="https://github.com/ColinEberhardt/applause-button/issues/72"&gt;issue&lt;/a&gt;, which
+pointed in the right direction. A good link that describe the default behavior by chrome is
+&lt;a href="https://developers.google.com/web/updates/2020/07/referrer-policy-new-chrome-default"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;(I have only tried this with chrome browser, so I don't know if it is applicable for other browsers.)&lt;/p&gt;
+&lt;p&gt;In the same issue, it is suggested to set the referrer policy to "no-referrer-when-downgrade".
+Checking the &lt;a href="https://www.w3.org/TR/referrer-policy/"&gt;specification&lt;/a&gt; for this policy indicated that setting the
+referer policy in the reverse-proxy is a good idea.&lt;/p&gt;
+&lt;p&gt;For nginx (in the reverse proxy) this is done like so (see the "add_header" directive below)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;# Reverse proxy to rpi2.local &lt;/span&gt;
+
+    listen &lt;span class="m"&gt;443&lt;/span&gt; ssl&lt;span class="p"&gt;;&lt;/span&gt;
+    listen &lt;span class="o"&gt;[&lt;/span&gt;::&lt;span class="o"&gt;]&lt;/span&gt;:443 ssl&lt;span class="p"&gt;;&lt;/span&gt;
+
+    server_name wlog.viltstigen.se&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# SSL configuration&lt;/span&gt;
+    include snippets/ssl-wlog.viltstigen.se.conf&lt;span class="p"&gt;;&lt;/span&gt;
+    include snippets/ssl-params.conf&lt;span class="p"&gt;;&lt;/span&gt;
+
+    location / &lt;span class="o"&gt;{&lt;/span&gt;
+        add_header Referrer-Policy &lt;span class="s2"&gt;&amp;quot;no-referrer-when-downgrade&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;# See https://github.com/ColinEberhardt/applause-button/issues/72&lt;/span&gt;
+        proxy_pass http://192.168.1.51&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;# rpi2.local&lt;/span&gt;
+    &lt;span class="o"&gt;}&lt;/span&gt;
+
+    location /.well-known/ &lt;span class="o"&gt;{}&lt;/span&gt;  &lt;span class="c1"&gt;# do not redirect for this directory, used by letsencrypt&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Applying this change to the reverse-proxy (in my case installed on node rpi1.local, the pelican web-server is on 
+rpi2.local) worked for me. I could now see that the referer header was set to the full path, and thus the clap is 
+registered on the right place. The add_header directive, means that the value of this field is set in the response to
+the browser. The browser will then include the full path to the blog entry when using the applause button API, rather
+than using only the URI value.&lt;/p&gt;
+&lt;p&gt;On the semantics of "no-referrer-when-downgrade" value, please check the 
+&lt;a href="https://www.w3.org/TR/referrer-policy/"&gt;specification&lt;/a&gt;.&lt;/p&gt;</content><category term="Technologies"></category><category term="Blog"></category><category term="Applause"></category><category term="nginx"></category><category term="chrome"></category></entry><entry><title>mDNS for Linux</title><link href="https://wlog.viltstigen.se/articles/2021/05/02/mdns-for-linux/" rel="alternate"></link><published>2021-05-02T00:00:00+02:00</published><updated>2021-05-02T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-05-02:/articles/2021/05/02/mdns-for-linux/</id><summary type="html">&lt;p&gt;Description of mDNS configuration for Linux Mint 20.1&lt;/p&gt;</summary><content type="html">&lt;p&gt;Switching from Linux Mint 19 to Linux Mint 20.1 meant that pinging host on my local network stopped working.
+I could still ping them using IP-addresses, but not their host names&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mm@wolfrax:~/dev/pyPDP/asm$ ping rpi2.local
+ping: rpi2.local: Name or service not known
+mm@wolfrax:~/dev/pyPDP/asm$ ping &lt;span class="m"&gt;192&lt;/span&gt;.168.1.51
+PING &lt;span class="m"&gt;192&lt;/span&gt;.168.1.51 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;56&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;84&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; bytes of data.
+&lt;span class="m"&gt;64&lt;/span&gt; bytes from &lt;span class="m"&gt;192&lt;/span&gt;.168.1.51: &lt;span class="nv"&gt;icmp_seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt; &lt;span class="nv"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.3 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;How come? This made me search and read on the configuration for mDNS.
+Until I found the right solution, I edited &lt;code&gt;/etc/hosts&lt;/code&gt; with hard-coded
+node name and IP-address (which is Ok, as I have configured static IP-addresses for these nodes).
+These looks like so,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;mm@wolfrax:~/dev/pyPDP/asm$ cat /etc/hosts
+&lt;span class="m"&gt;127&lt;/span&gt;.0.0.1   localhost
+&lt;span class="m"&gt;127&lt;/span&gt;.0.1.1   wolfrax
+
+&lt;span class="m"&gt;192&lt;/span&gt;.168.1.50    rpi1
+&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51    rpi2
+&lt;span class="m"&gt;192&lt;/span&gt;.168.1.52    rpi3
+&lt;span class="m"&gt;192&lt;/span&gt;.168.1.53    rpi4
+&lt;span class="m"&gt;192&lt;/span&gt;.168.1.54    rpi5    
+
+&lt;span class="c1"&gt;# The following lines are desirable for IPv6 capable hosts&lt;/span&gt;
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+mm@wolfrax:~/dev/pyPDP/asm$ ping rpi2
+PING rpi2 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;56&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;84&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; bytes of data.
+&lt;span class="m"&gt;64&lt;/span&gt; bytes from rpi2 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="nv"&gt;icmp_seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt; &lt;span class="nv"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;.61 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;mDNS&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Multicast_DNS"&gt;Multicast DNS&lt;/a&gt; (mDNS) resolve hostnames to IP-addresses for local networks.
+By default mDNS resolve hostnames with top-domain &lt;code&gt;.local&lt;/code&gt;. So, &lt;code&gt;rpi2.local&lt;/code&gt; would resolve to IP-address &lt;code&gt;192.168.1.51&lt;/code&gt;
+in my network.&lt;/p&gt;
+&lt;p&gt;There seems to be several ways to do this in a Linux environment, 3 of them are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Avahi_(software)"&gt;Avahi&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/NetworkManager"&gt;NetworkManager&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;systemd-resolved, see &lt;a href="https://en.wikipedia.org/wiki/Systemd"&gt;systemd&lt;/a&gt; and &lt;a href="https://wiki.archlinux.org/title/Systemd-resolved"&gt;systemd-resolved&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If not configured correctly, they might counteract each other. 
+See &lt;a href="https://wiki.archlinux.org/index.php/Systemd-resolved#mDNS"&gt;this article&lt;/a&gt; where disabling Avahi is suggested.&lt;/p&gt;
+&lt;p&gt;After some searching, I found &lt;a href="https://forums.linuxmint.com/viewtopic.php?p=1949048&amp;amp;sid=5bca7944423fb53de8a9dd8fb0c68ca5#p1949048"&gt;this thread&lt;/a&gt;
+where the problem I have where noted and resolved...somehwat.
+The core of the thread is to enable multicastDNS by editing &lt;code&gt;/etc/systemd/resolved.conf&lt;/code&gt; and editing the file so&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="na"&gt;MulticastDNS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;yes&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Then issue the following command (change interface to appropriate value) to set mdns for the interface&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo systemd-resolve --set-mdns&lt;span class="o"&gt;=&lt;/span&gt;yes --interface&lt;span class="o"&gt;=&lt;/span&gt;wlp3s0
+$ ping rpi2.local
+PING rpi2.local &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;56&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;84&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; bytes of data.
+&lt;span class="m"&gt;64&lt;/span&gt; bytes from rpi2 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="nv"&gt;icmp_seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt; &lt;span class="nv"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.26 ms
+&lt;span class="m"&gt;64&lt;/span&gt; bytes from rpi2 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.1.51&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="nv"&gt;icmp_seq&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="nv"&gt;ttl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt; &lt;span class="nv"&gt;time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.34 ms
+$ resolvectl
+Global
+       LLMNR setting: no                  
+MulticastDNS setting: yes                 
+  DNSOverTLS setting: no                  
+      DNSSEC setting: no                  
+    DNSSEC supported: no                  
+          DNSSEC NTA: &lt;span class="m"&gt;10&lt;/span&gt;.in-addr.arpa     
+                      &lt;span class="m"&gt;16&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;168&lt;/span&gt;.192.in-addr.arpa
+                      &lt;span class="m"&gt;17&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;18&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;19&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;20&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;21&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;22&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;23&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;24&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;25&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;26&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;27&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;28&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;29&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;30&lt;/span&gt;.172.in-addr.arpa 
+                      &lt;span class="m"&gt;31&lt;/span&gt;.172.in-addr.arpa 
+                      corp                
+                      d.f.ip6.arpa        
+                      home                
+                      internal            
+                      intranet            
+                      lan                 
+                      &lt;span class="nb"&gt;local&lt;/span&gt;               
+                      private             
+                      &lt;span class="nb"&gt;test&lt;/span&gt;                
+
+Link &lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;wlp3s0&lt;span class="o"&gt;)&lt;/span&gt;
+      Current Scopes: DNS mDNS/IPv4 mDNS/IPv6
+DefaultRoute setting: yes                    
+       LLMNR setting: yes                    
+MulticastDNS setting: yes             
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Works! Until you switch the interface off, then on again. The mdns setting for the interface has been lost. :-(&lt;/p&gt;
+&lt;p&gt;But, it can be fixed! Here is how.&lt;/p&gt;
+&lt;p&gt;Create a file named for example &lt;code&gt;wifi.network&lt;/code&gt; (it can be named anything, but the file extension &lt;em&gt;must&lt;/em&gt; be &lt;code&gt;network&lt;/code&gt;).
+Store the file in &lt;code&gt;/etc/systemd/network&lt;/code&gt;. The content of the file is&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[Match]&lt;/span&gt;
+&lt;span class="na"&gt;Name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;w*&lt;/span&gt;
+
+&lt;span class="k"&gt;[Network]&lt;/span&gt;
+&lt;span class="na"&gt;DHCP&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;yes&lt;/span&gt;
+&lt;span class="na"&gt;MulticastDNS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;yes&lt;/span&gt;
+&lt;span class="na"&gt;LLMR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;no&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note the wildcard on the Match-section. It could also be stated as &lt;code&gt;Name=wlp3s0&lt;/code&gt;.
+So, the logic is that mDNS needs to be enabled &lt;em&gt;both&lt;/em&gt; in &lt;code&gt;resolved.conf&lt;/code&gt; (globally) and per link in a new file with
+extension &lt;code&gt;network&lt;/code&gt; to become persistent.&lt;/p&gt;
+&lt;p&gt;Make systemd read the changes and check status using &lt;a href="https://www.freedesktop.org/software/systemd/man/networkctl.html#"&gt;networkctl&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ networkctl reload
+$ networkctl list
+IDX LINK      TYPE     OPERATIONAL SETUP     
+  &lt;span class="m"&gt;1&lt;/span&gt; lo        loopback carrier     unmanaged 
+  &lt;span class="m"&gt;2&lt;/span&gt; enp0s31f6 ether    no-carrier  unmanaged 
+  &lt;span class="m"&gt;3&lt;/span&gt; wlp3s0    wlan     routable    configured
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, the system should find &lt;code&gt;rpi2.local&lt;/code&gt; always.&lt;/p&gt;
+&lt;p&gt;Note that if &lt;code&gt;systemd.networkd&lt;/code&gt; is not enabled/running, do this through&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; systemd-networkd
+$ sudo systemctl start systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;Using DNS stub file&lt;/h1&gt;
+&lt;p&gt;Note below information from &lt;a href="https://wiki.archlinux.org/title/Systemd-resolved#DNS"&gt;archlinux&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Using the systemd DNS stub file - the systemd DNS stub file &lt;code&gt;/run/systemd/resolve/stub-resolv.conf&lt;/code&gt; contains the local 
+stub 127.0.0.53 as the only DNS server and a list of search domains. This is the recommended mode of operation. 
+The service users are advised to redirect the /etc/resolv.conf file to the local stub DNS resolver file 
+&lt;code&gt;/run/systemd/resolve/stub-resolv.conf&lt;/code&gt; managed by systemd-resolved. This propagates the systemd managed configuration 
+to all the clients. This can be done by replacing /etc/resolv.conf with a symbolic link to the systemd stub:
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="Technologies"></category><category term="Linux"></category><category term="mDNS"></category></entry><entry><title>rsyslog daemon filling syslog</title><link href="https://wlog.viltstigen.se/articles/2020/10/07/rsyslog-daemon-filling-syslog/" rel="alternate"></link><published>2020-10-07T00:00:00+02:00</published><updated>2020-10-07T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-10-07:/articles/2020/10/07/rsyslog-daemon-filling-syslog/</id><summary type="html">&lt;p&gt;rsyslog daemon is recurrently adding entries to /var/log/syslog ("rsyslogd-2007: action 'action 18'")&lt;/p&gt;</summary><content type="html">&lt;h1&gt;rsyslog&lt;/h1&gt;
 &lt;p&gt;&lt;a href="https://www.rsyslog.com/"&gt;ryslog&lt;/a&gt; is a logging system used in several Linux distributions, including raspbian.&lt;/p&gt;
 &lt;p&gt;I noticed that on one of my Raspberrys (not all) I had recurrent log entries of type&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Oct  7 18:59:38 rpi1 rsyslogd-2007: action &amp;#39;action 18&amp;#39; suspended, next retry is Wed Oct  7 19:01:08 2020 [try http://www.rsyslog.com/e/2007 ]
