@@ -1,7 +1,7 @@
 Title: Setting referer policy when using applause button
 Author: Mats Melander
 Date: 2021-07-14
-Modified: 2021-07-15
+Modified: 2021-07-16
 Tags: Blog, Applause, nginx, chrome
 Category: Technologies
 Summary: Description on how, and why, to set referer policy when using applause button
@@ -44,6 +44,14 @@ pointed in the right direction. A good link that describe the default behavior b
 In the same issue, it is suggested to set the referrer policy to "no-referrer-when-downgrade".
 Checking the [specification](https://www.w3.org/TR/referrer-policy/) for this policy indicated that setting the
 referer policy in the reverse-proxy is a good idea.
+
+From [Mozilla](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy) this is stated for 
+no-referrer-when-downgrade:
+
+> Send the origin, path, and querystring in Referer when the protocol security level stays the same or improves 
+> (HTTP→HTTP, HTTP→HTTPS, HTTPS→HTTPS). Don't send the Referer header for requests to less secure destinations 
+> (HTTPS→HTTP, HTTPS→file).
+
 
 For nginx (in the reverse proxy) this is done like so (see the "add_header" directive below)
 

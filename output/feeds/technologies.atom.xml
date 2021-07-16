@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog - Technologies</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/technologies.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-07-15T00:00:00+02:00</updated><entry><title>Setting referer policy when using applause button</title><link href="https://wlog.viltstigen.se/articles/2021/07/14/setting-referer-policy-when-using-applause-button/" rel="alternate"></link><published>2021-07-14T00:00:00+02:00</published><updated>2021-07-15T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-07-14:/articles/2021/07/14/setting-referer-policy-when-using-applause-button/</id><summary type="html">&lt;p&gt;Description on how, and why, to set referer policy when using applause button&lt;/p&gt;</summary><content type="html">&lt;p&gt;When blogging I use &lt;a href="https://applause-button.com/"&gt;applause button&lt;/a&gt; to allow claps and keep track of the number of
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog - Technologies</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/technologies.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-07-16T00:00:00+02:00</updated><entry><title>Setting referer policy when using applause button</title><link href="https://wlog.viltstigen.se/articles/2021/07/14/setting-referer-policy-when-using-applause-button/" rel="alternate"></link><published>2021-07-14T00:00:00+02:00</published><updated>2021-07-16T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-07-14:/articles/2021/07/14/setting-referer-policy-when-using-applause-button/</id><summary type="html">&lt;p&gt;Description on how, and why, to set referer policy when using applause button&lt;/p&gt;</summary><content type="html">&lt;p&gt;When blogging I use &lt;a href="https://applause-button.com/"&gt;applause button&lt;/a&gt; to allow claps and keep track of the number of
 claps I got (not many). How to use this with Pelican and the bootstrap3 theme is described 
 &lt;a href="https://wlog.viltstigen.se/articles/2020/06/18/pelican-bootstrap3-theme-and-jupyter/"&gt;here&lt;/a&gt; and
 &lt;a href="https://wlog.viltstigen.se/articles/2020/02/12/pelican-applause-button/"&gt;here&lt;/a&gt;.&lt;/p&gt;
@@ -28,6 +28,13 @@ pointed in the right direction. A good link that describe the default behavior b
 &lt;p&gt;In the same issue, it is suggested to set the referrer policy to "no-referrer-when-downgrade".
 Checking the &lt;a href="https://www.w3.org/TR/referrer-policy/"&gt;specification&lt;/a&gt; for this policy indicated that setting the
 referer policy in the reverse-proxy is a good idea.&lt;/p&gt;
+&lt;p&gt;From &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy"&gt;Mozilla&lt;/a&gt; this is stated for 
+no-referrer-when-downgrade:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Send the origin, path, and querystring in Referer when the protocol security level stays the same or improves 
+(HTTP→HTTP, HTTP→HTTPS, HTTPS→HTTPS). Don't send the Referer header for requests to less secure destinations 
+(HTTPS→HTTP, HTTPS→file).&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;For nginx (in the reverse proxy) this is done like so (see the "add_header" directive below)&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
     &lt;span class="c1"&gt;# Reverse proxy to rpi2.local &lt;/span&gt;
