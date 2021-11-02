@@ -1,5 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/all.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-07-16T00:00:00+02:00</updated><entry><title>Setting referer policy when using applause button</title><link href="https://wlog.viltstigen.se/articles/2021/07/14/setting-referer-policy-when-using-applause-button/" rel="alternate"></link><published>2021-07-14T00:00:00+02:00</published><updated>2021-07-16T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-07-14:/articles/2021/07/14/setting-referer-policy-when-using-applause-button/</id><summary type="html">&lt;p&gt;Description on how, and why, to set referer policy when using applause button&lt;/p&gt;</summary><content type="html">&lt;p&gt;When blogging I use &lt;a href="https://applause-button.com/"&gt;applause button&lt;/a&gt; to allow claps and keep track of the number of
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Wolfblog</title><link href="https://wlog.viltstigen.se/" rel="alternate"></link><link href="https://wlog.viltstigen.se/feeds/all.atom.xml" rel="self"></link><id>https://wlog.viltstigen.se/</id><updated>2021-09-14T00:00:00+02:00</updated><entry><title>Flask application behind a reverse proxy</title><link href="https://wlog.viltstigen.se/articles/2021/09/13/flask-application-behind-a-reverse-proxy/" rel="alternate"></link><published>2021-09-13T00:00:00+02:00</published><updated>2021-09-14T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-09-13:/articles/2021/09/13/flask-application-behind-a-reverse-proxy/</id><summary type="html">&lt;p&gt;A description how to manage a flask application that is behind a reverse proxy&lt;/p&gt;</summary><content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;I have a Flask-application that is externally accessed via an nginx proxy. Using this configuration I encountered
+a problem to access the full content, described below.&lt;/p&gt;
+&lt;p&gt;After some investigation, I found out that the fix for this problem was to set the value of a WSGI environment
+variable named &lt;code&gt;SCRIPT_NAME&lt;/code&gt;.&lt;/p&gt;
+&lt;h1&gt;Description&lt;/h1&gt;
+&lt;p&gt;A web-client access the link &lt;a href="https://www.viltstigen.se/tv_ws?stn=Lund"&gt;https://www.viltstigen.se/tv_ws?stn=Lund&lt;/a&gt;.
+The web-server at domain &lt;code&gt;viltstigen.se&lt;/code&gt; is a nginx proxy, that passes the request to another node in my network that 
+is running gunicorn/flask application stack. Flask generates html content that is passed back to the original web-client.&lt;/p&gt;
+&lt;p&gt;In the html-template that flask is using to generate html code, I have&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;script&lt;/span&gt; &lt;span class="na"&gt;src=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;url_for&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nv"&gt;filename&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;ws.js&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;which in turn will generate this&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;static/ws.js&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;which causes the web-client to request &lt;code&gt;https://www.viltstigen.se/static/ws.js&lt;/code&gt; which in turn causes a 404 return.&lt;/p&gt;
+&lt;p&gt;What we want instead is&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;tv_ws/static/ws.js&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;that becomes &lt;code&gt;https://www.viltstigen.se/tv_ws/static/ws.js&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So how to get &lt;code&gt;tv_ws&lt;/code&gt; into the URL?&lt;/p&gt;
+&lt;p&gt;An extensive description is found &lt;a href="https://dlukes.github.io/flask-wsgi-url-prefix.html"&gt;here&lt;/a&gt;.
+It boils down to setting the value of the WSGI environment variable &lt;code&gt;SCRIPT_NAME&lt;/code&gt; to &lt;code&gt;tv_ws&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you set &lt;code&gt;SCRIPT_NAME=/tv_ws&lt;/code&gt;, WSGI guarantees that the web server running the app will strip this prefix from 
+incoming URLs, and add it to outgoing URLs.&lt;/p&gt;
+&lt;p&gt;Here is how I do it in my flask application&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ReverseProxied&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;script_name&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;script_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;script_name&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__call__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start_response&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;SCRIPT_NAME&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;script_name&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start_response&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ReverseProxied&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;script_name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/tv_ws&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that if &lt;code&gt;SCRIPT_NAME&lt;/code&gt; already have a value (default value is "") it will be overwritten.
+Here, the &lt;code&gt;wsgi_app&lt;/code&gt; object of the flask app is extended with the ReverseProxied-class. According to the 
+&lt;a href="https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface"&gt;WSGI specification&lt;/a&gt;, the application should call
+start_response (which is a server callback function), this is done within flask. The extended flask application sets
+the value of &lt;code&gt;SCRIPT_NAME&lt;/code&gt; and call the original flask application object.&lt;/p&gt;
+&lt;p&gt;Several other solutions are discussing of setting the configuration of nginx instead, as an example see
+&lt;a href="https://stackoverflow.com/questions/25962224/running-a-flask-application-at-a-url-that-is-not-the-domain-root"&gt;https://stackoverflow.com/questions/25962224/running-a-flask-application-at-a-url-that-is-not-the-domain-root&lt;/a&gt;&lt;/p&gt;</content><category term="Technologies"></category><category term="Python"></category><category term="flask"></category><category term="nginx"></category><category term="gunicorn"></category><category term="wsgi"></category></entry><entry><title>Setting referer policy when using applause button</title><link href="https://wlog.viltstigen.se/articles/2021/07/14/setting-referer-policy-when-using-applause-button/" rel="alternate"></link><published>2021-07-14T00:00:00+02:00</published><updated>2021-07-16T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2021-07-14:/articles/2021/07/14/setting-referer-policy-when-using-applause-button/</id><summary type="html">&lt;p&gt;Description on how, and why, to set referer policy when using applause button&lt;/p&gt;</summary><content type="html">&lt;p&gt;When blogging I use &lt;a href="https://applause-button.com/"&gt;applause button&lt;/a&gt; to allow claps and keep track of the number of
 claps I got (not many). How to use this with Pelican and the bootstrap3 theme is described 
 &lt;a href="https://wlog.viltstigen.se/articles/2020/06/18/pelican-bootstrap3-theme-and-jupyter/"&gt;here&lt;/a&gt; and
 &lt;a href="https://wlog.viltstigen.se/articles/2020/02/12/pelican-applause-button/"&gt;here&lt;/a&gt;.&lt;/p&gt;
@@ -226,15 +275,15 @@ logs this issue. So this is expected behaviour, but I want to get rid of the mes
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo systemctl restart rsyslog
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Should then be Ok.&lt;/p&gt;</content><category term="Technologies"></category><category term="Linux"></category><category term="Raspberry"></category></entry><entry><title>Trafikverket weather station</title><link href="https://wlog.viltstigen.se/articles/2020/10/07/trafikverket-weather-station/" rel="alternate"></link><published>2020-10-07T00:00:00+02:00</published><updated>2020-10-12T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-10-07:/articles/2020/10/07/trafikverket-weather-station/</id><summary type="html">&lt;p&gt;How to read and plot weather information by Trafikverket&lt;/p&gt;</summary><content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Should then be Ok.&lt;/p&gt;</content><category term="Technologies"></category><category term="Linux"></category><category term="Raspberry"></category></entry><entry><title>Trafikverket weather station</title><link href="https://wlog.viltstigen.se/articles/2020/10/07/trafikverket-weather-station/" rel="alternate"></link><published>2020-10-07T00:00:00+02:00</published><updated>2021-09-12T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-10-07:/articles/2020/10/07/trafikverket-weather-station/</id><summary type="html">&lt;p&gt;How to read and plot weather information by Trafikverket&lt;/p&gt;</summary><content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;In Sweden, Trafikverket (Swedish Transport Administration) have a 
 &lt;a href="https://www.trafikverket.se/tjanster/trafiktjanster/VViS/"&gt;country wide network of weather stations&lt;/a&gt; monitor
 road conditions. The primary purpose is to use data for managing of roads, but data is available through
 an &lt;a href="https://api.trafikinfo.trafikverket.se/"&gt;Open API&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;I have &lt;a href="https://github.com/Wolfrax/tv"&gt;implemented&lt;/a&gt; reading data from selected station recurrently (when new data is 
-produced), store into a file and generates some plots as png-files and an HTML-file. The implementation store and plot 
+produced), store into a JSON file and generate an HTML-file. The implementation store and plot 
 24 hours of data at most.&lt;/p&gt;
-&lt;p&gt;As an example, weather data for station "Lund N" is &lt;a href="https://www.viltstigen.se/tv_ws/"&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;As an example, weather data for station "Lund N" is &lt;a href="https://www.viltstigen.se/tv_ws?stn=Lund"&gt;here&lt;/a&gt;&lt;/p&gt;
 &lt;h1&gt;Implementation&lt;/h1&gt;
 &lt;p&gt;Using the Open API require an authorization key, a &lt;a href="https://api.trafikinfo.trafikverket.se/Account/Register"&gt;registration&lt;/a&gt;
 is needed (free of charge). The key is available there.
@@ -248,19 +297,17 @@ The key is added to file &lt;code&gt;auth.yml&lt;/code&gt; using syntax:&lt;/p&g
 Something like this.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;lt;REQUEST&amp;gt;
   &amp;lt;LOGIN authenticationkey=&amp;#39;71fa8aa80d...&amp;#39;/&amp;gt;
-  &amp;lt;QUERY sseurl=&amp;quot;true&amp;quot; objecttype=&amp;#39;WeatherStation&amp;#39; schemaversion=&amp;#39;1&amp;#39;&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Air.RelativeHumidity&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Air.Temp&amp;lt;/INCLUDE&amp;gt;  
-    &amp;lt;INCLUDE&amp;gt;Measurement.MeasureTime&amp;lt;/INCLUDE&amp;gt;    
-    &amp;lt;INCLUDE&amp;gt;Measurement.Precipitation.Amount&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Precipitation.AmountName&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Precipitation.Type&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Wind.Direction&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Wind.Force&amp;lt;/INCLUDE&amp;gt;
-    &amp;lt;INCLUDE&amp;gt;Measurement.Wind.ForceMax&amp;lt;/INCLUDE&amp;gt;
+  &amp;lt;QUERY sseurl=&amp;quot;true&amp;quot; objecttype=&amp;#39;WeatherMeasurepoint&amp;#39; schemaversion=&amp;#39;1&amp;#39;&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Sample&amp;lt;/INCLUDE&amp;gt;  
+    &amp;lt;INCLUDE&amp;gt;Observation.Air.RelativeHumidity.Value&amp;lt;/INCLUDE&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Air.Temperature.Value&amp;lt;/INCLUDE&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Wind.Direction.Value&amp;lt;/INCLUDE&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Wind.Speed.Value&amp;lt;/INCLUDE&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Aggregated10minutes.Precipitation.TotalWaterEquivalent.Value&amp;lt;/INCLUDE&amp;gt;
+    &amp;lt;INCLUDE&amp;gt;Observation.Aggregated30minutes.Wind.SpeedMax.Value&amp;lt;/INCLUDE&amp;gt;
     &amp;lt;INCLUDE&amp;gt;Name&amp;lt;/INCLUDE&amp;gt;
     &amp;lt;FILTER&amp;gt;
-        &amp;lt;EQ name=&amp;quot;Name&amp;quot; value=&amp;#39;Lund N&amp;#39; /&amp;gt;
+        &amp;lt;EQ name=&amp;quot;Name&amp;quot; value=&amp;#39;&amp;quot;&amp;quot;&amp;quot; + stn_name + &amp;quot;&amp;quot;&amp;quot;&amp;#39; /&amp;gt;
     &amp;lt;/FILTER&amp;gt;
   &amp;lt;/QUERY&amp;gt;
 &amp;lt;/REQUEST&amp;gt;
@@ -296,124 +343,30 @@ recurrently poll the server. Thus, most of the time the implementation is stuck 
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;msg&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Following that, the data can be processed, for exampled plotted, thi is described below.&lt;/p&gt;
-&lt;p&gt;As the plotting is made within a loop (the outmost loop is the &lt;code&gt;while True&lt;/code&gt; loop, and the inner loop is the
-&lt;code&gt;for msg in messages&lt;/code&gt;) we need to consider how memory is handled when plotting. In my case, I use maplotlib and figures,
-subplots, axis etc needs to be explicitly closed before we plot next time in the loops.&lt;/p&gt;
-&lt;p&gt;There are several ways to do this of course, as an exercise I chose to start a new process each time a plot is generated.
-This will free up any memory used by matplotlib when the process terminates. It might look as overkill (and probably is...)
-but does the work, and, besides, plotting is normally made every 10:nth minute.&lt;/p&gt;
-&lt;p&gt;This snippet shows the process thing for plotting:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Process&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;do_graph&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;msr&lt;/span&gt;&lt;span class="p"&gt;,))&lt;/span&gt;
-&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;120&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# kill after 2 minutes&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exitcode&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exitcode&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;logging&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;warning&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Graphical process - exit on timeout, is_alive is &lt;/span&gt;&lt;span class="si"&gt;{}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_alive&lt;/span&gt;&lt;span class="p"&gt;()))&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_alive&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kill&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;A new process is created, executing the routine &lt;code&gt;do_graph&lt;/code&gt; with argument &lt;code&gt;msr&lt;/code&gt; (that includes data to be plotted).
-The process needs to be explicitly started (&lt;code&gt;p.start()&lt;/code&gt;), the we wait at most 120 seconds for it to terminate
-(&lt;code&gt;p.join()&lt;/code&gt;). If the join-statement timeout, ie something has gone wrong, we issue a warning and check if the process is
-still alive. If it is, brutally kill it (&lt;code&gt;p.kill()&lt;/code&gt;) .&lt;/p&gt;
-&lt;p&gt;Ok, now for plotting&lt;/p&gt;
-&lt;h1&gt;Plotting&lt;/h1&gt;
-&lt;p&gt;I use &lt;a href="https://matplotlib.org/index.html"&gt;matplotlib&lt;/a&gt;, partly for training purposes for the 'normal' plots.
-For windrose plotting, I use &lt;a href="https://github.com/python-windrose/windrose"&gt;python-windrose&lt;/a&gt; for convenience.&lt;/p&gt;
-&lt;p&gt;As several plots have a time axis, I need to adjust matplotlibs timezone setting (in my case UTC+2:00 hours) or else
-the plots will be wrongly adjusted.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rcParams&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;timezone&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;+2:00&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Using matplotlib, I create 2 figures. Figure 1 for plotting air temperature, humidity (in the same sub-plot), rain
-(in a second sub-plot) and wind force/direction (sub-plot 3). 
-Figure 2 is the windrose plot.&lt;/p&gt;
-&lt;p&gt;For figure 1, we do:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="n"&gt;ax1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="n"&gt;ax2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;twinx&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  &lt;span class="c1"&gt;# Create a right-hand y-axis&lt;/span&gt;
-&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ax2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="n"&gt;ax3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sharex&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# Share x-axis with subplot 1&lt;/span&gt;
-&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ax3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="n"&gt;ax4&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ax3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;twinx&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ax4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="n"&gt;ax5&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sharex&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;   &lt;span class="c1"&gt;# Share x-axis with subplot 1&lt;/span&gt;
-&lt;span class="n"&gt;temp_rain_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ax5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This figure (&lt;code&gt;temp_rain_fig&lt;/code&gt;) have 3 subplots:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;ax1, ax2: To plot temperature (y-axis to left) and humidity (y-axis on right)&lt;/li&gt;
-&lt;li&gt;ax3, ax4: To plot rain, both non-accumlated (y-axis to left) and accumulated (y-axis on right) &lt;/li&gt;
-&lt;li&gt;ax5: To plot wind strength, both average and maximum as two graphs. To this graph, wind direction will be added&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The last plot is generated into a separate figure. This is the windrose plot.
-This comes with a separate library, &lt;a href="https://github.com/python-windrose/windrose"&gt;python-windrose&lt;/a&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;windrose_fig&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;span class="n"&gt;THETA_LABELS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;N-E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;N&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;N-W&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;W&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S-W&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S-E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;wr_ax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;WindroseAxes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;from_ax&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;windrose_fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;theta_labels&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;THETA_LABELS&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;windrose_fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add_axes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wr_ax&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To get the labeling right for the windrose plot, &lt;code&gt;THETA_LABLES&lt;/code&gt; needs to be explicitly added as above.
-This seems to have changed over versions (I'm using version 1.6.8).&lt;/p&gt;
-&lt;p&gt;Before plotting, data is collected into lists, for example&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;time&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dateutil&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;msr&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;MeasureTime&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;msr&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;temp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;msr&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Air&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Temp&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;msr&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;annotate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt; &lt;span class="n"&gt;xy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
-&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;annotate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt; &lt;span class="n"&gt;xy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;The last 2 rows, annotates the graph at start and endpoints.&lt;/p&gt;
-&lt;p&gt;The windrose is made like this&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;wr_ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_dir&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;wind_force&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opening&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;edgecolor&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;white&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;For the plotting of wind direction and strength (in the oridnary plot, not windrose), this snippet is applicable:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;WIND_LABELS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;N&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;N-E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S-E&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;S-W&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;W&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;N-W&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;WIND_DEGREES&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;90&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;45&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;315&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;270&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;225&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;180&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;135&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;bins&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;360&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WIND_LABELS&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;enumerate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_dir_hour&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="nb"&gt;bin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;digitize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_dir_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;bins&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="c1"&gt;# bin can be out of index if &amp;quot;Direction&amp;quot; == &amp;quot;NaN&amp;quot;&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WIND_DEGREES&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MarkerStyle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;$\leftarrow$&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_transform&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rotate_deg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WIND_DEGREES&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ax5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_time_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;wind_val_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
-                      &lt;span class="n"&gt;marker&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-                      &lt;span class="n"&gt;markersize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-                      &lt;span class="n"&gt;linestyle&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;None&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;crimson&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dir&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;enumerate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_dir_hour&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="nb"&gt;bin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;digitize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_dir_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;bins&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WIND_LABELS&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ax5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;annotate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WIND_LABELS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;wind_time_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;wind_val_hour&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt;
-                          &lt;span class="n"&gt;xytext&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;textcoords&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;offset points&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;First, I divide the space 0 - 360 into 8 bins (length of WIND_LABELS), then I loop over a list of hourly wind directions
-(a subset of all wind direction measurements) and catch into which bin each value goes into (bin).
-Now, wind direction values might have the value 'NaN' in case I have prevously caught a strange or missing value (this happens).&lt;/p&gt;
-&lt;p&gt;On the graph for wind force, I want to indicate the wind direction, so I capture a lefthand arraw symbol as marker
-(&lt;code&gt;r$\leftarrow$&lt;/code&gt;) and rotate (&lt;code&gt;_transform.rotate&lt;/code&gt;) this by looking up a value in WIND_DEGREES using the previous bin
-value. Finally, I plot the rotated marker on ax5.&lt;/p&gt;
-&lt;p&gt;I also want to annotate the wind direction below the marker, which is the last part of above snippet.&lt;/p&gt;
-&lt;p&gt;To format the x-axis of the plots, I use this:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;hours&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdates&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HourLocator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;interval&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;h_fmt&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdates&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DateFormatter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;%H:%M&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;ax1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tick_params&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;x&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;labelrotation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;45&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;ax5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xaxis&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_major_locator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hours&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;ax5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xaxis&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_major_formatter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;h_fmt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Using this, I set the format "10:00", rotated 45 degrees, on each tick at the x-axis.&lt;/p&gt;
+&lt;p&gt;Following that, the data can be processed, for exampled plotted, this is described below.&lt;/p&gt;
+&lt;h1&gt;UI&lt;/h1&gt;
+&lt;p&gt;Using &lt;a href="https://flask.palletsprojects.com/en/2.0.x/"&gt;Flask&lt;/a&gt;, &lt;a href="https://www.highcharts.com/"&gt;Highcharts&lt;/a&gt;, 
+&lt;a href="https://getbootstrap.com/"&gt;Bootstrap&lt;/a&gt;, &lt;a href="https://jquery.com/"&gt;jQuery&lt;/a&gt; and some javascript a web client/server model is 
+used to expose information as a dahsboard.&lt;/p&gt;
+&lt;p&gt;The flask app is served through &lt;a href="https://gunicorn.org/"&gt;gunicorn&lt;/a&gt; listening on port 8300 (using a systemd service).
+A webclient uses a querystring parameter &lt;code&gt;stn&lt;/code&gt; to indicate which station data to use, e.g. &lt;code&gt;stn=Lund&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The flask-app (ws_emitter) generates an html-page in return, using the template mechanism with flask, see details at
+&lt;a href="https://github.com/Wolfrax/tv"&gt;github&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The html-page uses bootstrap for layout of the dashboard, specifically using the grid system and card-component.
+In the html code, id-values are used to set symbolic names of specific divisions of the page. These divisions are then
+referenced by javascript code with actual data read from the server using ajax.&lt;/p&gt;
+&lt;p&gt;To render the table of the last hour of data, the jquery plugin &lt;a href="https://datatables.net/"&gt;datatables&lt;/a&gt; is used. 
+The querystring paramter &lt;code&gt;ind&lt;/code&gt; (short for index) is used with value &lt;code&gt;-7&lt;/code&gt;, indicating to get the last 7 values from the 
+server (as reading are done normally every 10th minute from trafikverket, using the last 7 readings will get the last 
+hour of data).&lt;/p&gt;
+&lt;p&gt;Highcharts are used to draw graphs of temperature and humidity (dual y-axis as the graphs are in the same diagram), rain
+(also dual y-axis as both momentary and accumulated values are show in the same diagram), wind (using the specific 
+wind-barb feature in Highcharts) and a wind-rose.&lt;/p&gt;
+&lt;p&gt;The wind-rose needs some calculations and is therefore using &lt;a href="https://d3js.org/"&gt;d3.js&lt;/a&gt; &lt;code&gt;bin&lt;/code&gt; function (normally used
+for making histrograms) to group wind data in wind speed intervals. These bins are then looped to calculate the
+frequency of wind-directions in certain intervals (0-45, 45 - 90, etc). This information are then fed into highcharts
+windrose chart.&lt;/p&gt;
+&lt;p&gt;Better read the source code for all details of above...&lt;/p&gt;
 &lt;h2&gt;Daemon&lt;/h2&gt;
 &lt;p&gt;The script runs as a daemon on a Raspberry Pi, to have this &lt;code&gt;systemd&lt;/code&gt; is used and a service description file with
 content below is stored in &lt;code&gt;/etc/systemd/system/tv_ws.service&lt;/code&gt;:&lt;/p&gt;
@@ -422,11 +375,6 @@ Description=Trafikverket weatherstation
 After=network.target
 
 [Service]
-# To enable this, systemctl needs to be done in the following order
-#   $ sudo systemctl enable /home/pi/rpi5/etc/systemd/user/tv_ws.service
-#   $ sudo systemctl start tv_ws.service
-# The first (enable) command will create symlink and enable the service so it get started at reboot
-#
 Type=simple
 WorkingDirectory=/home/pi/app/tv
 User=pi
@@ -436,10 +384,7 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;An HTML file is generated by the script using Flask, the file make reference to the plots that is saved as PNG-files.&lt;/p&gt;
-&lt;p&gt;Refer to the full implementation &lt;a href="https://github.com/Wolfrax/tv"&gt;here&lt;/a&gt;&lt;/p&gt;</content><category term="Technologies"></category><category term="Python"></category><category term="weather"></category></entry><entry><title>Installing geopandas and geoplot on Raspberry Pi</title><link href="https://wlog.viltstigen.se/articles/2020/07/07/installing-geopandas-and-geoplot-on-raspberry-pi/" rel="alternate"></link><published>2020-07-07T00:00:00+02:00</published><updated>2020-07-14T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-07-07:/articles/2020/07/07/installing-geopandas-and-geoplot-on-raspberry-pi/</id><summary type="html">&lt;p&gt;Installing geopandas and geoplot on Raspberry Pi running buster&lt;/p&gt;</summary><content type="html">&lt;p&gt;Installing &lt;a href="https://geopandas.readthedocs.io/en/latest/"&gt;geopandas&lt;/a&gt; and 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><category term="Technologies"></category><category term="Python"></category><category term="weather"></category></entry><entry><title>Installing geopandas and geoplot on Raspberry Pi</title><link href="https://wlog.viltstigen.se/articles/2020/07/07/installing-geopandas-and-geoplot-on-raspberry-pi/" rel="alternate"></link><published>2020-07-07T00:00:00+02:00</published><updated>2020-07-14T00:00:00+02:00</updated><author><name>Mats Melander</name></author><id>tag:wlog.viltstigen.se,2020-07-07:/articles/2020/07/07/installing-geopandas-and-geoplot-on-raspberry-pi/</id><summary type="html">&lt;p&gt;Installing geopandas and geoplot on Raspberry Pi running buster&lt;/p&gt;</summary><content type="html">&lt;p&gt;Installing &lt;a href="https://geopandas.readthedocs.io/en/latest/"&gt;geopandas&lt;/a&gt; and 
 &lt;a href="https://residentmario.github.io/geoplot/index.html"&gt;geoplot&lt;/a&gt; on a Raspberry Pi turned out not to be 
 straight forward. Hence, I tried to resolve and install this manually. The details of the environment is:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Raspberry Pi 3 Model B Rev 1.2, Linux version 4.19.118-v7+, Raspbian GNU/Linux 10 (buster)
