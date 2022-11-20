@@ -1,7 +1,7 @@
 Title: Pelican bootstrap3 theme and Jupyter
 Author: Mats Melander
 Date: 2020-06-18
-Modified: 2021-04-29
+Modified: 2022-11-20
 Tags: Pelican
 Category: Technologies
 Summary: A note on using Pelican bootstrap3 theme
@@ -119,4 +119,41 @@ Then, to show it at the end of the article, add the `<applause-button>`-tag in `
             <!-- MM: add the button! -->
             <applause-button style="width: 58px; height: 58px;"/>
         </article>
+```
+
+**Update 2022-11-20** To enable Google Analytics 4, the file `ga.html` 
+(located at /home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/themes/pelican-bootstrap3/templates/includes) is
+updated. The content of this file as per below.
+```jinja2
+{% if GOOGLE_ANALYTICS %}
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS}}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{{GOOGLE_ANALYTICS}}');
+</script>
+
+{% endif %}
+{% if GOOGLE_ANALYTICS_UNIVERSAL %}
+    <!-- Google Analytics Universal -->
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', '{{ GOOGLE_ANALYTICS_UNIVERSAL }}', '{{ GOOGLE_ANALYTICS_UNIVERSAL_PROPERTY }}');
+        ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics Universal Code -->
+{% endif %}
+```
+Note that the last part, under GOOGLE_ANALTYICS_UNIVERSAL, is not used by me, but I left it there.
+In `publishconf.py`, add this
+```python
+GOOGLE_ANALYTICS  = "Whatever-your-identifier-is"
 ```
