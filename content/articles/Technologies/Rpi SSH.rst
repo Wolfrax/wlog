@@ -2,7 +2,7 @@ SSH
 ***
 
 :date: 2020-01-11
-:modified: 2020-06-22
+:modified: 2023-01-02
 :tags: Raspberry, SSH
 :summary: A note on using SSH
 
@@ -17,9 +17,15 @@ To generate keys on my host (Linux or MacBook) and then store the public key on 
 
     $ ssh-keygen -t rsa -C pi@rpi1
     $ cat ~/.ssh/id_rsa.pub | ssh pi@rpi1.local 'cat >> .ssh/authorized_keys'
+    alternatively, use the command below instead of cat...
+    $ ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 pi@192.168.1.50
 
 Note that the last command transfer the public key to rpi1 using ssh and store it in file ``~/.ssh/authorized_keys``.
 This will invoke to provide password for SSH.
+
+If this doesn't work and you get an error message like ``pi@192.168.1.50: Permission denied (publickey).`` then check
+``PasswordAuthentication`` at rpi1 in ``/etc/ssh/sshd_config`` and if it's no change it to yes.
+Don't forget to restart ssh service after that (``$ sudo systemctl restart sshd``).
 
 Make sure that directory ``.ssh`` exists on home directory for user pi at the raspberry host rpi1.
 If not do ``$ install -d -m 700 ~/.ssh`` at the rpi1 first
@@ -70,7 +76,7 @@ To delete a single entry from known_hosts (remove both IP address and node name 
 
     $ ssh-keygen -R <hostname or IP address>
 
-Then re-do the command `$ ssh-keyscan 192.168.1.50 >> ~/.ssh/known_hosts`.
+Then re-do the command ``$ ssh-keyscan 192.168.1.50 >> ~/.ssh/known_hosts``.
 
 Github ssh access
 =================
