@@ -2,7 +2,7 @@ Raspberry backup using rclone
 *****************************
 
 :date: 2020-01-18
-:modified: 2020-01-29
+:modified: 2023-01-03
 :tags: Raspberry, Google Drive, rclone
 :summary: A note on using rclone and Google drive
 
@@ -11,6 +11,8 @@ Backing up raspberries using `rclone <https://rclone.org/drive/>`_ to Google dri
 Installation of rclone
 ======================
 Installation on **rpi1**.
+
+**Update**: A good source of information: `Mounting Google Drive on Raspberry Pi <https://medium.com/@artur.klauser/mounting-google-drive-on-raspberry-pi-dd15193d8138>`_
 
 Please note the **"INSTRUCTIONS Google Drive Example"** at the end of rclone installation.
 
@@ -85,7 +87,7 @@ A pop-up screen appears with "client ID" and "client Secret" visible, keep them 
 Note also that I have choosen a "root_folder_id" below, following the instructions
 `here <https://rclone.org/drive/#root-folder-id>`_. Essentially, using the Google Drive web interface, create a new
 folder (e.g. "rpi_bck"), then move into this folder and copy the last part of the URL.
-The string "[...]", below is inserted in fields where I donät want to expose any information.
+The string "[...]", below is inserted in fields where I don't want to expose any information.
 
 .. code-block:: bash
 

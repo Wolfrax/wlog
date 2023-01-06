@@ -2,7 +2,7 @@ Raspberry setup
 ***************
 
 :date: 2020-01-05
-:modified: 2020-06-22
+:modified: 2023-01-06
 :tags: Raspberry
 :summary: A note on setting up Raspberry Pi
 
@@ -182,6 +182,9 @@ it alerts through email.
 
 Supervisor
 ##########
+
+Note! Supervisor is not used anymore, systemd services is used instead. Below is kept for reference.
+
 `Supervisor <http://supervisord.org/>`_ is a tool for monitoring daemons. Install and configure supervisor
 
 .. code-block:: bash
