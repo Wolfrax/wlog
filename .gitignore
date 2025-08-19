@@ -1,3 +1,6 @@
 output/
 .idea/
 /output/
+.venv/
+venv/
+__pycache__/

@@ -28,7 +28,7 @@ LINKS = (('Viltstigen', 'https://www.viltstigen.se/'),
 #RELATIVE_URLS = True
 
 # bootstrap3 theme settings, see https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3
-THEME = "pelican-bootstrap3"
+THEME = "/home/mm/dev/wlog/pelican-themes/pelican-bootstrap3" 
 JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
 PYGMENTS_STYLE = 'default'  # See https://help.farbox.com/pygments.html for examples
 SITELOGO = 'img/Wolf_logo.png'
@@ -43,7 +43,7 @@ MONTH_ARCHIVE_SAVE_AS = 'archive/{date:%Y}/{date:%b}/index.html'
 DISPLAY_ARCHIVE_ON_SIDEBAR = True
 
 ARTICLE_PATHS = ['articles']
-STATIC_PATHS = ['img', 'pdf', 'extra', 'extra/robots.txt', 'extra/favicon.ico']
+STATIC_PATHS = ['img', 'pdf', 'extra', 'extra/robots.txt', 'extra/favicon.ico', 'components']
 PAGE_PATHS = ['pages']
 ARTICLE_URL = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
 ARTICLE_SAVE_AS = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
@@ -59,7 +59,7 @@ EXTRA_PATH_METADATA = {
 }
 
 # Plugins are installed (git clone) into the virtual environment for wlog
-PLUGIN_PATHS = ['/home/mm/dev/wlog/venv/lib/python3.8/site-packages/pelican/pelican-plugins']
+PLUGIN_PATHS = ['/home/mm/dev/wlog/venv/lib/python3.10/site-packages/pelican/pelican-plugins']
 
 # liquid_tags.notebook: For including Jupyter notebooks {% notebook example.ipynb % }
 #         See https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags#ipython-notebooks
