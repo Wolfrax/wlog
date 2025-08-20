@@ -113,6 +113,10 @@
               title="{{ SITENAME }} {{ category }} ATOM Feed"/>
     {%- endif %}
 
+    {% if EXTRA_HEADER %}
+        {{ EXTRA_HEADER }}
+    {% endif %}
+
     {% include 'includes/ga.html' %}
 
 </head>
